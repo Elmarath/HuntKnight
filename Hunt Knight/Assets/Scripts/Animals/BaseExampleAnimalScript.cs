@@ -10,7 +10,6 @@ public class BaseExampleAnimalScript : Herbivore // It's either Herbivore or Car
 
     // Field of view attributes filled here
     #region FieldOfView
-    LayerMask targetMask;
     #endregion
 
     // Which states the animal has

@@ -39,7 +39,6 @@ public class FieldOfView : MonoBehaviour
                     if (hitObjectLayer == targetObjectLayer)
                     {
                         visibleTargets.Add(targetObject);
-                        Debug.DrawRay(transform.position, dirToTarget * dstToTarget, Color.magenta, 0.25f);
                     }
                 }
             }  
@@ -60,5 +59,10 @@ public class FieldOfView : MonoBehaviour
             angleInDegrees += transform.eulerAngles.y;
         }
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
+    }
+
+    public List<GameObject> GetVisibleTargets()
+    {
+        return visibleTargets;
     }
 }

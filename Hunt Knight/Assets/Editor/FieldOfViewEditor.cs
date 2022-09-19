@@ -20,7 +20,8 @@ public class FieldOfViewEditor : Editor
 
 
         Handles.color = Color.blue;
-        foreach (GameObject visibleTarget in fow.visibleTargets)
+
+        foreach (GameObject visibleTarget in fow.GetVisibleTargets())
         {
             Handles.DrawLine(fow.transform.position, visibleTarget.transform.position);
         }

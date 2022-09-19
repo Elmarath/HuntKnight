@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
  // This is an example of a base state. It is not used in the project.
-public class Eat : State
+public class Consume : State
 {
     // Condition variables set here
+    private Rabbit rabbit; // state owner
 
-    public Eat(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
+
+    public Consume(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
     {
     }
 
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("Consume Enter");
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
     }

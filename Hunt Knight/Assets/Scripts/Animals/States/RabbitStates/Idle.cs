@@ -8,7 +8,7 @@ public class Idle : State
     private float timeWhenStateIsEntered = 0f;
     private bool isWaitTimeOver = false;
 
-    private State rabbitWalkState;
+    private Rabbit rabbit; // state owner
 
     public Idle(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
     {
@@ -17,12 +17,12 @@ public class Idle : State
     public override void Enter()
     {
         base.Enter();
-        rabbitWalkState = animal.GetComponent<Rabbit>().walk;
+        rabbit = animal.GetComponent<Rabbit>();
         isWaitTimeOver = false;
         waitTime = animal.idleTime; // normally you have to get this value by using GetComponent<AnimalKind>().idleTime
         timeWhenStateIsEntered = Time.time;
 
-        animal.GetComponent<Rabbit>().goIdle = true;
+        rabbit.goIdle = true;
     }
 
     public override void Exit()
@@ -43,9 +43,31 @@ public class Idle : State
     {
         base.LogicUpdate();
 
-        if(isWaitTimeOver)
+        // has it seen nutrient -> go eat/drink
+        if(rabbit.hasSeenNutrient)
+        {   
+            rabbit.walk.SetWalkDestination(rabbit.visibleNutrients[0].transform.position);
+            stateMachine.ChangeState(rabbit.walk);
+        }
+
+        // is ready to poop
+        else if(rabbit.isReadyToPoop)
         {
-            stateMachine.ChangeState(rabbitWalkState);
+            // stateMachine.ChangeState(rabbit.poop);
+            Debug.Log("Rabbit Pooped!");
+            if(isWaitTimeOver)
+            {
+                stateMachine.ChangeState(rabbit.walk);
+            }
+        }
+
+        // maybe mate condition goes here
+
+        // if rabbit is not hungry and not ready to poop, then wait a while in idle
+        else if(isWaitTimeOver)
+        {
+            stateMachine.ChangeState(rabbit.walk);
+
         }
     }
 

@@ -1024,28 +1024,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   logicUpdateInterval: 0.25
+  nutrientNeed: 0
+  poopNeed: 0
+  nutrientNeedCapacity: 100
+  poopNeedCapacity: 100
+  nutrientNeedIncreaseRate: 1
+  poopNeedIncreaseRate: 1
+  needNutrientThreshold: 30
+  needToPoopThreshold: 90
   walkingSpeed: 1
   idleTime: 3
   closeEnoughTolerance: 0.31
   minSearchDistance: 1
+  visibleTargets: []
   viewRadius: 5
   viewAngle: 120
-  visibleTargets: []
   isIndicatorsWanted: 0
   movementIndicator: {fileID: 6308180631572516317, guid: 32c0b03d9aa0a594cba6b0a8ff6761b4, type: 3}
-  targetMask:
+  nutrientMask:
     serializedVersion: 2
     m_Bits: 256
+  runFromMask:
+    serializedVersion: 2
+    m_Bits: 1024
   agent: {fileID: 0}
   animator: {fileID: 0}
   fieldOfView: {fileID: 0}
+  walkDestination: {x: 0, y: 0, z: 0}
   isSearchingForFood: 0
   isSearchingForWater: 0
   isEating: 0
   isDrinking: 0
   goIdle: 0
   goWalk: 0
-  hasSeenFood: 0
+  hasSeenNutrient: 0
+  hasSeenPredator: 0
+  isNeedNutrient: 0
+  isReadyToPoop: 0
 --- !u!114 &5465231781901963186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1063,7 +1078,6 @@ MonoBehaviour:
   targetMask:
     serializedVersion: 2
     m_Bits: 0
-  visibleTargets: []
 --- !u!195 &47699877466586316
 NavMeshAgent:
   m_ObjectHideFlags: 0
