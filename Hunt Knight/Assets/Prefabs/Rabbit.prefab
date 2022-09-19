@@ -1033,14 +1033,19 @@ MonoBehaviour:
   visibleTargets: []
   isIndicatorsWanted: 0
   movementIndicator: {fileID: 6308180631572516317, guid: 32c0b03d9aa0a594cba6b0a8ff6761b4, type: 3}
-  beVaryOfMask:
+  targetMask:
     serializedVersion: 2
     m_Bits: 256
   agent: {fileID: 0}
   animator: {fileID: 0}
   fieldOfView: {fileID: 0}
+  isSearchingForFood: 0
+  isSearchingForWater: 0
+  isEating: 0
+  isDrinking: 0
   goIdle: 0
   goWalk: 0
+  hasSeenFood: 0
 --- !u!114 &5465231781901963186
 MonoBehaviour:
   m_ObjectHideFlags: 0

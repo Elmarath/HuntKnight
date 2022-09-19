@@ -26,7 +26,6 @@ public abstract class Animal : MonoBehaviour
     public float viewRadius = 5f;
     [Range(1, 360)]
     public float viewAngle = 120f;
-    LayerMask targetMask;
     LayerMask runAwayMask;
     public List<GameObject> visibleTargets = new List<GameObject>();
     #endregion
@@ -39,8 +38,7 @@ public abstract class Animal : MonoBehaviour
 
     [Header("TargetLayerMask")]
     #region LayerMasks
-    public LayerMask nutrientMask; // layer mask for food and drinks
-    public LayerMask runFromMask; // Animal is wary of this layer gameobjects and will run away from them
+    public LayerMask targetMask;
     #endregion
 
     #region Attachments
@@ -51,7 +49,7 @@ public abstract class Animal : MonoBehaviour
     [HideInInspector]
     public Animator animator;
     [HideInInspector]
-    public FieldOfView fieldOfViewOfNutrients;
+    public FieldOfView fieldOfView;
     #endregion
 
     // Control Variables for state machine
@@ -66,11 +64,11 @@ public abstract class Animal : MonoBehaviour
         stateMachine = new StateMachine();
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
-        fieldOfViewOfFood = GetComponent<FieldOfView>();
+        fieldOfView = GetComponent<FieldOfView>();
         
-        fieldOfViewOfFood.viewRadius = viewRadius;
-        fieldOfViewOfFood.viewAngle = viewAngle;
-        fieldOfViewOfFood.targetMask = foodMask;
+        fieldOfView.viewRadius = viewRadius;
+        fieldOfView.viewAngle = viewAngle;
+        fieldOfView.targetMask = targetMask;
 
         SetAnimationNamesToIds();
         InitializeStates();
