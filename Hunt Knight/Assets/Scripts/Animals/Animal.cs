@@ -30,7 +30,9 @@ public abstract class Animal : MonoBehaviour
     #region AnimalAttributes
         public float walkingSpeed;
         public float idleTime;
-        [Range(0.31f, 1f)]
+        public float consumeTime;
+        public float poopTime;
+        [Range(0.1f, 1f)]
         public float closeEnoughTolerance;
         [Range(1, 20)]
         public float minSearchDistance; // min distance to search for anything
@@ -46,12 +48,14 @@ public abstract class Animal : MonoBehaviour
         [Range(1, 360)]
         public float viewAngle = 120f;
         [HideInInspector] public LayerMask targetMask;
+        [Space(20)]
     #endregion
 
     [Header("Indicators")]
     #region
         public bool isIndicatorsWanted = false;
         public GameObject movementIndicator;
+        public GameObject animalExcrement;
     #endregion
 
     [Header("TargetLayerMask")]
@@ -186,7 +190,7 @@ public abstract class Animal : MonoBehaviour
                 continue;
             }
             // Navigation Validation Check
-            bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, 0.3f, NavMesh.AllAreas);
+            bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, closeEnoughTolerance, NavMesh.AllAreas);
             if(!isWalkable)
             {
                 continue;
@@ -218,7 +222,7 @@ public abstract class Animal : MonoBehaviour
     public bool IsCloseEnough(Vector3 destination, float tolerance)
     {
         Vector3 _position = new Vector3(transform.position.x, 0, transform.position.z);
-        return  ((destination - _position).sqrMagnitude) < (tolerance * tolerance);
+        return  (Vector3.Distance(_position, destination) < tolerance);
     }
 
     // Spawns the given indicator in position
@@ -226,6 +230,12 @@ public abstract class Animal : MonoBehaviour
     {
         GameObject _indicator = Instantiate(indicator, position, Quaternion.identity);
         Destroy(_indicator, 5f);
+    }
+
+    public void Poop(GameObject excrement, Vector3 position)
+    {
+        GameObject _excrement = Instantiate(excrement, position, Quaternion.identity);
+        Destroy(_excrement, 30f);
     }
 
     public LayerMask AddTwoMask(LayerMask mask1, LayerMask mask2)

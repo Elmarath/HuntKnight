@@ -1023,7 +1023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba26644cedf19a447b9cf56430728452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logicUpdateInterval: 0.25
+  logicUpdateInterval: 0.5
   nutrientNeed: 0
   poopNeed: 0
   nutrientNeedCapacity: 100
@@ -1033,14 +1033,21 @@ MonoBehaviour:
   needNutrientThreshold: 30
   needToPoopThreshold: 90
   walkingSpeed: 1
-  idleTime: 3
-  closeEnoughTolerance: 0.31
+  idleTime: 2
+  consumeTime: 4
+  poopTime: 5
+  closeEnoughTolerance: 0.4
   minSearchDistance: 1
-  visibleTargets: []
+  visibleNutrients: []
+  visibleRunFroms: []
   viewRadius: 5
   viewAngle: 120
-  isIndicatorsWanted: 0
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
+  isIndicatorsWanted: 1
   movementIndicator: {fileID: 6308180631572516317, guid: 32c0b03d9aa0a594cba6b0a8ff6761b4, type: 3}
+  animalExcrement: {fileID: 4528337202842737428, guid: 3a7bafcc63b664a84b0cab775623126d, type: 3}
   nutrientMask:
     serializedVersion: 2
     m_Bits: 256
@@ -1050,13 +1057,10 @@ MonoBehaviour:
   agent: {fileID: 0}
   animator: {fileID: 0}
   fieldOfView: {fileID: 0}
-  walkDestination: {x: 0, y: 0, z: 0}
-  isSearchingForFood: 0
-  isSearchingForWater: 0
-  isEating: 0
-  isDrinking: 0
   goIdle: 0
   goWalk: 0
+  goConsume: 0
+  goPoop: 0
   hasSeenNutrient: 0
   hasSeenPredator: 0
   isNeedNutrient: 0
@@ -1078,6 +1082,7 @@ MonoBehaviour:
   targetMask:
     serializedVersion: 2
     m_Bits: 0
+  visibleTargets: []
 --- !u!195 &47699877466586316
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1087,7 +1092,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 3000502622456028622}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.59
   m_Speed: 1
   m_Acceleration: 8
   avoidancePriority: 50
@@ -1096,10 +1101,10 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 0.06
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 3
 --- !u!1 &3000977237947353954
 GameObject:
   m_ObjectHideFlags: 0

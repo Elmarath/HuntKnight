@@ -15,11 +15,15 @@ public class Rabbit : Herbivore
         public Walk walk;
         [HideInInspector]
         public Consume consume;
+        [HideInInspector]
+        public Poop poop;
     #endregion
 
     #region animationStringIds
         private int goIdle_id;
         private int goWalk_id;
+        private int goConsume_id;
+        private int goPoop_id;
     #endregion
 
     // Control Variables for state machine
@@ -28,6 +32,10 @@ public class Rabbit : Herbivore
         public bool goIdle = false;
         [HideInInspector]
         public bool goWalk = false;
+        [HideInInspector]
+        public bool goConsume = false;
+        [HideInInspector]
+        public bool goPoop = false;
         [HideInInspector]
         public bool hasSeenNutrient = false;
         [HideInInspector]
@@ -53,7 +61,7 @@ public class Rabbit : Herbivore
         
         if(hasSeenPredator)
         {
-            Debug.Log("Rabbit has seen predator");
+            //Debug.Log("Rabbit has seen predator");
         }
     }
 
@@ -65,6 +73,7 @@ public class Rabbit : Herbivore
         base.UpdateAnimationVariables();
         animator.SetBool(goIdle_id, goIdle);
         animator.SetBool(goWalk_id, goWalk);
+        animator.SetBool(goConsume_id, goConsume);
     }
 
     //******* MUST BE FILLED*******//
@@ -108,6 +117,8 @@ public class Rabbit : Herbivore
         base.SetAnimationNamesToIds();
         goIdle_id = Animator.StringToHash("goIdle");
         goWalk_id = Animator.StringToHash("goWalk");
+        goConsume_id = Animator.StringToHash("goConsume");
+        goPoop_id = Animator.StringToHash("goPoop");
     }
 
 
@@ -121,6 +132,7 @@ public class Rabbit : Herbivore
         idle = new Idle(this, stateMachine);
         walk = new Walk(this, stateMachine);
         consume = new Consume(this, stateMachine);
+        poop = new Poop(this, stateMachine);
         stateMachine.Initialize(idle);
     }
 

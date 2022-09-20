@@ -3,28 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
  // This is an example of a base state. It is not used in the project.
-public class Consume : State
+public class Poop : State
 {
     // Condition variables set here
     private Rabbit rabbit; // state owner
-    private float consumeTime;
     private float timeWhenStateIsEntered = 0f;
-    private bool isConsumeTimeOver = false;
+    private float poopTime;
+    private bool isPoopTimeOver = false;
 
-    public Consume(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
+    public Poop(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
     {
     }
 
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("Consume Enter");
+        Debug.Log("Poop Enter");
         rabbit = animal.GetComponent<Rabbit>();
-        consumeTime = rabbit.consumeTime;
+        poopTime = rabbit.poopTime;
         timeWhenStateIsEntered = Time.time;
+        rabbit.Poop(rabbit.animalExcrement, rabbit.transform.position);
 
         // Set Animation Variables
-        rabbit.goConsume = true;
+        rabbit.goPoop = true;
 
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
@@ -33,8 +34,9 @@ public class Consume : State
     public override void Exit()
     {
         base.Exit();
-        isConsumeTimeOver = false;
-        rabbit.goConsume = false;
+        rabbit.poopNeed = 0f;
+        isPoopTimeOver = false;
+        rabbit.goPoop = false;
         rabbit.goIdle = true;
         rabbit.nutrientNeed = 0f;
         // When exiting set the animation variables
@@ -43,32 +45,21 @@ public class Consume : State
     {
         base.HandleInput();
         // Handle the input and set conditions for exiting the state
-        if((Time.time - timeWhenStateIsEntered) > consumeTime)
+        if((Time.time - timeWhenStateIsEntered) > poopTime)
         {
-            isConsumeTimeOver = true;
+            isPoopTimeOver = true;
         }
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+        Debug.Log(Time.time - timeWhenStateIsEntered);
 
-        if(isConsumeTimeOver)
+        if(isPoopTimeOver)
         {
             stateMachine.ChangeState(rabbit.idle);
         }
-        
-        // // check if consumable still exists
-        // if(!(animal.visibleNutrients.Count > 0)) // if not
-        // {
-        //     Debug.Log("No more consumable");
-        //     stateMachine.ChangeState(rabbit.idle);
-        // }
-        // else
-        // {
-        //     Debug.Log("Consumable still exists");
-        //     stateMachine.ChangeState(rabbit.consume);
-        // }
     }
 
 }

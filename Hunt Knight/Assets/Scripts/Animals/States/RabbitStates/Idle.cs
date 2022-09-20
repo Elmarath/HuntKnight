@@ -28,7 +28,7 @@ public class Idle : State
     public override void Exit()
     {
         base.Exit();
-        animal.GetComponent<Rabbit>().goIdle = false;
+        rabbit.goIdle = false;
     }
     public override void HandleInput()
     {
@@ -44,7 +44,7 @@ public class Idle : State
         base.LogicUpdate();
 
         // has it seen nutrient -> go eat/drink
-        if(rabbit.hasSeenNutrient)
+        if(rabbit.hasSeenNutrient && rabbit.isNeedNutrient)
         {   
             rabbit.walk.SetWalkDestination(rabbit.visibleNutrients[0].transform.position);
             stateMachine.ChangeState(rabbit.walk);
@@ -54,10 +54,9 @@ public class Idle : State
         else if(rabbit.isReadyToPoop)
         {
             // stateMachine.ChangeState(rabbit.poop);
-            Debug.Log("Rabbit Pooped!");
             if(isWaitTimeOver)
             {
-                stateMachine.ChangeState(rabbit.walk);
+                stateMachine.ChangeState(rabbit.poop);
             }
         }
 
