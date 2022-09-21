@@ -43,7 +43,7 @@ public class Rabbit : Herbivore
     public bool goRun = false;
     [HideInInspector]
     public bool hasSeenNutrient = false;
-    //[HideInInspector]
+    [HideInInspector]
     public bool hasSeenPredator = false;
     [HideInInspector]
     public bool isNeedNutrient = false;
@@ -54,15 +54,6 @@ public class Rabbit : Herbivore
     void Awake()
     {
         Initialize();
-    }
-
-    //******* MUST BE FILLED*******//
-    // Update state checks for switching to another state in instant
-    // This is for switching state check that are instant (From any state)
-    // Called every logicUpdateInterval
-    public override void UpdateState()
-    {
-        base.UpdateState();
     }
 
     //******* MUST BE FILLED*******//
@@ -98,13 +89,13 @@ public class Rabbit : Herbivore
             for (int i = 0; i < fieldOfView.GetVisibleTargets().Count; i++)
             {
                 // is a nutriment visible
-                if (isLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, nutrientMask))
+                if (AnimalHelper.IsLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, nutrientMask))
                 {
                     visibleNutrients.Add(fieldOfView.GetVisibleTargets()[i].gameObject);
                     hasSeenNutrient = true;
                 }
                 // is animal to run from visible 
-                if (isLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, runFromMask))
+                if (AnimalHelper.IsLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, runFromMask))
                 {
                     visibleRunFroms.Add(fieldOfView.GetVisibleTargets()[i].gameObject);
                     hasSeenPredator = true;
@@ -129,7 +120,6 @@ public class Rabbit : Herbivore
         goPoop_id = Animator.StringToHash("goPoop");
     }
 
-
     //******* MUST BE FILLED*******//
     // only called once when the animal is created
     // This method takes the states of the animal and initalizes them
@@ -145,4 +135,16 @@ public class Rabbit : Herbivore
         stateMachine.Initialize(idle);
     }
 
+    //******* MUST BE FILLED*******//
+    // called every logicUpdateInterval
+    // This method needs the be overriden for "Any State" transformations
+    public override void HandleInterrupts()
+    {
+        base.HandleInterrupts();
+        // Handle the interrupts and set conditions for exiting the state
+        if (hasSeenPredator && !(stateMachine.CurrentState == run))
+        {
+            stateMachine.ChangeState(run);
+        }
+    }
 }

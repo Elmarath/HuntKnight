@@ -14,6 +14,7 @@ public class Idle : State
     {
     }
 
+    //******* MUST BE FILLED*******//
     public override void Enter()
     {
         base.Enter();
@@ -25,12 +26,13 @@ public class Idle : State
 
         rabbit.goIdle = true;
     }
-
+    //******* MUST BE FILLED*******//
     public override void Exit()
     {
         base.Exit();
         rabbit.goIdle = false;
     }
+    //******* MUST BE FILLED*******//
     public override void HandleInput()
     {
         base.HandleInput();
@@ -39,7 +41,7 @@ public class Idle : State
             isWaitTimeOver = true;
         }
     }
-
+    //******* MUST BE FILLED*******//
     public override void LogicUpdate()
     {
         base.LogicUpdate();
@@ -68,17 +70,6 @@ public class Idle : State
         {
             stateMachine.ChangeState(rabbit.walk);
 
-        }
-    }
-
-    public override void HandleInterrupts()
-    {
-        base.HandleInterrupts();
-        Debug.Log("Idle Interrupted");
-        // Handle the interrupts and set conditions for exiting the state
-        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
-        {
-            stateMachine.ChangeState(rabbit.run);
         }
     }
 

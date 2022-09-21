@@ -90,7 +90,7 @@ public abstract class Animal : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         fieldOfView = GetComponent<FieldOfView>();
 
-        targetMask = AddTwoMask(runFromMask, nutrientMask);
+        targetMask = AnimalHelper.AddTwoMask(runFromMask, nutrientMask);
         fieldOfView.viewRadius = viewRadius;
         fieldOfView.viewAngle = viewAngle;
         fieldOfView.targetMask = targetMask;
@@ -113,9 +113,9 @@ public abstract class Animal : MonoBehaviour
 
     public virtual void UpdateStateMachine()
     {
-        UpdateState();
         stateMachine.CurrentState.HandleInput();
         stateMachine.CurrentState.LogicUpdate();
+        stateMachine.CurrentState.HandleInterrupts();
         UpdateAnimationVariables();
     }
 
@@ -130,17 +130,6 @@ public abstract class Animal : MonoBehaviour
     // Called every logicUpdateInterval
     public virtual void UpdateAnimationVariables()
     {
-    }
-
-    // Update state checks for switching to another state
-    // must be overriden in child class if instant state switchs are needed
-    // This is for switching state check that are instant (From any state)
-    // Called every logicUpdateInterval
-    public virtual void UpdateState()
-    {
-        // run
-        // die
-        // make birth etc.
     }
 
     // Must be initialized to set animation string to ids for better performance
@@ -167,88 +156,7 @@ public abstract class Animal : MonoBehaviour
     {
     }
 
-    // Creates a random Destination which in the animals searchable area
-    public Vector3 CreateRandomDestination(float viewRadius, float viewAngle, float minSearchDistance)
+    public virtual void HandleInterrupts()
     {
-        Vector3 randomDirection;
-        Vector2 randomDirectionV2;
-        Vector3 finalPosition;
-        NavMeshHit hit;
-
-        for (int i = 0; i < 10; i++)
-        {
-            randomDirectionV2 = Random.insideUnitCircle * viewRadius;
-            randomDirection = new Vector3(randomDirectionV2.x, 0, randomDirectionV2.y);
-            randomDirection += transform.position;
-
-            float distance = Vector3.Distance(randomDirection, transform.position);
-
-            // Distance Check
-            if (distance < minSearchDistance)
-            {
-                continue;
-            }
-            // Angle Check
-            if (Vector3.Angle(transform.forward, randomDirection - transform.position) > viewAngle / 2)
-            {
-                continue;
-            }
-            // Navigation Validation Check
-            bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, closeEnoughTolerance, NavMesh.AllAreas);
-            if (!isWalkable)
-            {
-                continue;
-            }
-
-            finalPosition = randomDirection;
-
-            if (isIndicatorsWanted)
-            {
-                SpawnIndicator(movementIndicator, finalPosition);
-            }
-
-            return finalPosition;
-        }
-
-        finalPosition = transform.position - (transform.forward * minSearchDistance);
-        return finalPosition;
-    }
-
-    // sets given destination to the agent's destination and draws ray to that position
-    public void GotoDestination(Vector3 destination)
-    {
-        Vector3 dir = destination - transform.position;
-        Debug.DrawRay(transform.position, dir, Color.red, 2f, false);
-        agent.SetDestination(destination);
-    }
-
-    // Check if self is close enough to destination
-    public bool IsCloseEnough(Vector3 destination, float tolerance)
-    {
-        Vector3 _position = new Vector3(transform.position.x, 0, transform.position.z);
-        return (Vector3.Distance(_position, destination) < tolerance);
-    }
-
-    // Spawns the given indicator in position
-    public void SpawnIndicator(GameObject indicator, Vector3 position)
-    {
-        GameObject _indicator = Instantiate(indicator, position, Quaternion.identity);
-        Destroy(_indicator, 5f);
-    }
-
-    public void Poop(GameObject excrement, Vector3 position)
-    {
-        GameObject _excrement = Instantiate(excrement, position, Quaternion.identity);
-        Destroy(_excrement, 30f);
-    }
-
-    public LayerMask AddTwoMask(LayerMask mask1, LayerMask mask2)
-    {
-        return mask1 | mask2;
-    }
-
-    public bool isLayerInLayerMask(int layer, LayerMask layerMask)
-    {
-        return layerMask == (layerMask | (1 << layer));
     }
 }

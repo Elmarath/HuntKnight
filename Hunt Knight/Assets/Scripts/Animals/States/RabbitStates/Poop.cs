@@ -14,7 +14,7 @@ public class Poop : State
     public Poop(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
     {
     }
-
+    //******* MUST BE FILLED*******//
     public override void Enter()
     {
         base.Enter();
@@ -22,7 +22,7 @@ public class Poop : State
         rabbit = animal.GetComponent<Rabbit>();
         poopTime = rabbit.poopTime;
         timeWhenStateIsEntered = Time.time;
-        rabbit.Poop(rabbit.animalExcrement, rabbit.transform.position);
+        MakePoop(rabbit.animalExcrement, rabbit.transform.position);
         animal.currentState = "Poop";
         // Set Animation Variables
         rabbit.goPoop = true;
@@ -30,7 +30,7 @@ public class Poop : State
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
     }
-
+    //******* MUST BE FILLED*******//
     public override void Exit()
     {
         base.Exit();
@@ -41,6 +41,7 @@ public class Poop : State
         rabbit.nutrientNeed = 0f;
         // When exiting set the animation variables
     }
+    //******* MUST BE FILLED*******//
     public override void HandleInput()
     {
         base.HandleInput();
@@ -50,11 +51,10 @@ public class Poop : State
             isPoopTimeOver = true;
         }
     }
-
+    //******* MUST BE FILLED*******//
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        Debug.Log(Time.time - timeWhenStateIsEntered);
 
         if (isPoopTimeOver)
         {
@@ -62,13 +62,10 @@ public class Poop : State
         }
     }
 
-    public override void HandleInterrupts()
+    // //******* State Specific Methods *******//
+    public void MakePoop(GameObject excrement, Vector3 position)
     {
-        base.HandleInterrupts();
-        // Handle the interrupts and set conditions for exiting the state
-        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
-        {
-            stateMachine.ChangeState(rabbit.run);
-        }
+        GameObject _excrement = GameObject.Instantiate(excrement, position, Quaternion.identity);
+        GameObject.Destroy(_excrement, 30f);
     }
 }

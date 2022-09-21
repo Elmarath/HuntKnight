@@ -14,7 +14,7 @@ public class Consume : State
     public Consume(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
     {
     }
-
+    //******* MUST BE FILLED*******//
     public override void Enter()
     {
         base.Enter();
@@ -30,7 +30,7 @@ public class Consume : State
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
     }
-
+    //******* MUST BE FILLED*******//
     public override void Exit()
     {
         base.Exit();
@@ -40,6 +40,7 @@ public class Consume : State
         rabbit.nutrientNeed = 0f;
         // When exiting set the animation variables
     }
+    //******* MUST BE FILLED*******//
     public override void HandleInput()
     {
         base.HandleInput();
@@ -49,7 +50,7 @@ public class Consume : State
             isConsumeTimeOver = true;
         }
     }
-
+    //******* MUST BE FILLED*******//
     public override void LogicUpdate()
     {
         base.LogicUpdate();
@@ -71,15 +72,4 @@ public class Consume : State
         //     stateMachine.ChangeState(rabbit.consume);
         // }
     }
-
-    public override void HandleInterrupts()
-    {
-        base.HandleInterrupts();
-        // Handle the interrupts and set conditions for exiting the state
-        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
-        {
-            stateMachine.ChangeState(rabbit.run);
-        }
-    }
-
 }

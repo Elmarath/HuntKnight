@@ -11,11 +11,12 @@ public class Run : State
     private GameObject predatorToRunFrom;
     private Vector3 runDestination;
     private bool isArrived = false;
+    private bool startOfTheRun = true; // used only once for createRandomRunAwayDestination for animal to turn around
 
     public Run(Animal animal, StateMachine stateMachine) : base(animal, stateMachine)
     {
     }
-
+    //******* MUST BE FILLED*******//
     public override void Enter()
     {
         base.Enter();
@@ -24,30 +25,30 @@ public class Run : State
         rabbit.agent.speed = rabbit.runningSpeed;
         rabbit.currentState = "Run";
         predatorToRunFrom = FindClosestPredator();
-        runDestination = CreateRandomRunAwayDestination(animal.viewRadius * 1.50f, animal.viewAngle / 2, animal.minSearchDistance * 2);
-        animal.GotoDestination(runDestination);
+        startOfTheRun = true;
+        runDestination = CreateRandomRunAwayDestination(animal.viewRadius * 1.50f, 360 - animal.viewAngle, animal.minSearchDistance * 2); // for turning back
+        AnimalHelper.GotoDestination(animal, runDestination);
         // Set Animation Variables
         rabbit.goRun = true;
+        startOfTheRun = false;
     }
-
+    //******* MUST BE FILLED*******//
     public override void Exit()
     {
         base.Exit();
         rabbit.agent.speed = rabbit.walkingSpeed;
         // When exiting set the animation variables
         rabbit.goRun = false;
+        isArrived = false;
     }
+    //******* MUST BE FILLED*******//
     public override void HandleInput()
     {
         base.HandleInput();
-        isArrived = animal.IsCloseEnough(runDestination, animal.closeEnoughTolerance);
-        Debug.Log("isArrived: " + isArrived);
-        Debug.Log("animal.closeEnoughTolerance: " + animal.closeEnoughTolerance);
-        Debug.Log("Distance to destination: " + Vector3.Distance(animal.transform.position, runDestination));
-
+        isArrived = AnimalHelper.IsCloseEnough(animal.transform.position, runDestination, animal.closeEnoughTolerance);
         // Handle the input and set conditions for exiting the state
     }
-
+    //******* MUST BE FILLED*******//
     public override void LogicUpdate()
     {
         base.LogicUpdate();
@@ -57,7 +58,7 @@ public class Run : State
             if (!HasRunnedAwayFromPredator())
             {
                 runDestination = CreateRandomRunAwayDestination(animal.viewRadius * 1.50f, animal.viewAngle / 2, animal.minSearchDistance * 2);
-                animal.GotoDestination(runDestination);
+                AnimalHelper.GotoDestination(animal, runDestination);
             }
             else
             {
@@ -65,7 +66,7 @@ public class Run : State
             }
         }
     }
-
+    //******* MUST BE FILLED*******//
     public GameObject FindClosestPredator()
     {
         GameObject closestPredator = null;
@@ -88,6 +89,9 @@ public class Run : State
 
     }
 
+    //******* State Specific Methods *******//
+
+    // check if the animal has runned away from predator
     public bool HasRunnedAwayFromPredator()
     {
         // Check if the predator is not in the viewRadius
@@ -102,16 +106,7 @@ public class Run : State
         return false;
     }
 
-    public override void HandleInterrupts()
-    {
-        base.HandleInterrupts();
-        // Handle the interrupts and set conditions for exiting the state
-        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
-        {
-            stateMachine.ChangeState(rabbit.run);
-        }
-    }
-
+    // create a random destination to run away from predator (first destination is to turn around)
     public Vector3 CreateRandomRunAwayDestination(float viewRadius, float viewAngle, float minSearchDistance)
     {
         Vector3 randomDirection;
@@ -119,7 +114,7 @@ public class Run : State
         Vector3 finalPosition;
         NavMeshHit hit;
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 20; i++)
         {
             randomDirectionV2 = Random.insideUnitCircle * viewRadius;
             randomDirection = new Vector3(randomDirectionV2.x, 0, randomDirectionV2.y);
@@ -133,10 +128,22 @@ public class Run : State
                 continue;
             }
             // Angle Check
-            if (Vector3.Angle(rabbit.transform.forward, randomDirection - rabbit.transform.position) < viewAngle * 2)
+            if (startOfTheRun)
             {
-                continue;
+                Debug.Log("Start of the run");
+                if (Vector3.Angle(rabbit.transform.forward, randomDirection - rabbit.transform.position) < viewAngle / 2)
+                {
+                    continue;
+                }
             }
+            else
+            {
+                if (Vector3.Angle(rabbit.transform.forward, randomDirection - rabbit.transform.position) > viewAngle / 2)
+                {
+                    continue;
+                }
+            }
+
             // Navigation Validation Check
             bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, rabbit.closeEnoughTolerance, NavMesh.AllAreas);
             if (!isWalkable)
@@ -148,7 +155,7 @@ public class Run : State
 
             if (rabbit.isIndicatorsWanted)
             {
-                rabbit.SpawnIndicator(rabbit.movementIndicator, finalPosition);
+                AnimalHelper.SpawnIndicator(rabbit.movementIndicator, finalPosition);
             }
 
             return finalPosition;

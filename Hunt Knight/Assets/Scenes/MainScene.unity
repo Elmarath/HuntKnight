@@ -260,6 +260,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1165853154371126886, guid: 083e09b560102df44a5c7e8c6185a7d2, type: 3}
+      propertyPath: runningSpeed
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3000502622456028622, guid: 083e09b560102df44a5c7e8c6185a7d2, type: 3}
       propertyPath: m_Name
       value: Rabbit
@@ -278,7 +282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3005826206235709154, guid: 083e09b560102df44a5c7e8c6185a7d2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.59
+      value: 33.68
       objectReference: {fileID: 0}
     - target: {fileID: 3005826206235709154, guid: 083e09b560102df44a5c7e8c6185a7d2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -286,7 +290,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3005826206235709154, guid: 083e09b560102df44a5c7e8c6185a7d2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 21.17
+      value: 25.85
       objectReference: {fileID: 0}
     - target: {fileID: 3005826206235709154, guid: 083e09b560102df44a5c7e8c6185a7d2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1804,7 +1808,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1074312594}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 8.36, y: 0, z: 2.72}
   m_LocalScale: {x: 0.15, y: 1, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -16,6 +16,7 @@ public class Walk : State // walks to a random destination if no destination giv
     {
     }
 
+    //******* MUST BE FILLED*******//
     public override void Enter()
     {
         base.Enter();
@@ -26,13 +27,14 @@ public class Walk : State // walks to a random destination if no destination giv
         // if Destination not set, then set a random destination
         if (!isDestinationSet)
         {
-            walkDestination = animal.CreateRandomDestination(animal.viewRadius, animal.viewAngle, animal.minSearchDistance);
+            walkDestination = AnimalHelper.CreateRandomDestination(animal);
             walkDestination.y = 0f;
         }
         animal.currentState = "Walk";
         walkDestination.y = 0f;
-        animal.GotoDestination(walkDestination);
+        AnimalHelper.GotoDestination(animal, walkDestination);
     }
+    //******* MUST BE FILLED*******//
     public override void HandleInput()
     {
         base.HandleInput();
@@ -41,9 +43,9 @@ public class Walk : State // walks to a random destination if no destination giv
         {
             SetWalkDestination(rabbit.visibleNutrients[0].transform.position);
         }
-        isArrived = animal.IsCloseEnough(walkDestination, animal.closeEnoughTolerance);
+        isArrived = AnimalHelper.IsCloseEnough(animal.transform.position, walkDestination, animal.closeEnoughTolerance);
     }
-
+    //******* MUST BE FILLED*******//
     public override void LogicUpdate()
     {
         base.LogicUpdate();
@@ -67,7 +69,7 @@ public class Walk : State // walks to a random destination if no destination giv
             stateMachine.ChangeState(rabbit.idle);
         }
     }
-
+    //******* MUST BE FILLED*******//
     public override void Exit()
     {
         base.Exit();
@@ -75,6 +77,9 @@ public class Walk : State // walks to a random destination if no destination giv
         rabbit.goWalk = false;
         isDestinationSet = false;
     }
+
+
+    //******* State Specific Methods *******//
 
     // Call This method if you want to walk to a specific destination if you dont want to walk to a random destination
     public void SetWalkDestination(Vector3 destination)
@@ -84,14 +89,5 @@ public class Walk : State // walks to a random destination if no destination giv
         walkDestination.y = 0f;
     }
 
-    public override void HandleInterrupts()
-    {
-        base.HandleInterrupts();
-        // Handle the interrupts and set conditions for exiting the state
-        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
-        {
-            stateMachine.ChangeState(rabbit.run);
-        }
-    }
 
 }

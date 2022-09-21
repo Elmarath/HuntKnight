@@ -50,14 +50,6 @@ public class BaseExampleAnimalScript : Herbivore // It's either Herbivore or Car
     }
 
     //******* MUST BE FILLED*******//
-    // Updates instant state checks (like seen predetor, food, or got damaged)
-    public override void UpdateState()
-    {
-        base.UpdateState();
-
-    }
-
-    //******* MUST BE FILLED*******//
     // This method is used to update the animation variables of the animal
     public override void UpdateAnimationVariables()
     {
