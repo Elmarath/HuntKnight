@@ -43,7 +43,7 @@ public class Rabbit : Herbivore
     public bool goRun = false;
     [HideInInspector]
     public bool hasSeenNutrient = false;
-    [HideInInspector]
+    //[HideInInspector]
     public bool hasSeenPredator = false;
     [HideInInspector]
     public bool isNeedNutrient = false;
@@ -63,11 +63,6 @@ public class Rabbit : Herbivore
     public override void UpdateState()
     {
         base.UpdateState();
-
-        if (hasSeenPredator) // if seen predator run unless already running
-        {
-            stateMachine.ChangeState(run);
-        }
     }
 
     //******* MUST BE FILLED*******//
@@ -81,7 +76,11 @@ public class Rabbit : Herbivore
         animator.SetBool(goWalk_id, goWalk);
         animator.SetBool(goConsume_id, goConsume);
         animator.SetBool(goPoop_id, goPoop);
-        animator.SetBool(goRun_id, goRun);
+        if (goRun)
+        {
+            animator.SetTrigger("goRun");
+            goRun = false;
+        }
     }
 
     //******* MUST BE FILLED*******//
@@ -128,7 +127,6 @@ public class Rabbit : Herbivore
         goWalk_id = Animator.StringToHash("goWalk");
         goConsume_id = Animator.StringToHash("goConsume");
         goPoop_id = Animator.StringToHash("goPoop");
-        goRun_id = Animator.StringToHash("goRun");
     }
 
 

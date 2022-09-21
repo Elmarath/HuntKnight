@@ -3,9 +3,9 @@ public abstract class State
     protected Animal animal;
     protected StateMachine stateMachine;
 
-    protected State(Animal rabbit, StateMachine stateMachine)
+    protected State(Animal animal, StateMachine stateMachine)
     {
-        this.animal = rabbit;
+        this.animal = animal;
         this.stateMachine = stateMachine;
     }
 
@@ -17,12 +17,18 @@ public abstract class State
     public virtual void HandleInput()
     {
         // whenever we exit the state stop coroutines
+        HandleInterrupts();
     }
     public virtual void LogicUpdate()
     {
 
     }
     public virtual void Exit()
+    {
+
+    }
+
+    public virtual void HandleInterrupts()
     {
 
     }

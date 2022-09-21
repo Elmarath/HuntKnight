@@ -84,4 +84,14 @@ public class Walk : State // walks to a random destination if no destination giv
         walkDestination.y = 0f;
     }
 
+    public override void HandleInterrupts()
+    {
+        base.HandleInterrupts();
+        // Handle the interrupts and set conditions for exiting the state
+        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
+        {
+            stateMachine.ChangeState(rabbit.run);
+        }
+    }
+
 }

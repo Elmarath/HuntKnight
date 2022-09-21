@@ -62,4 +62,13 @@ public class Poop : State
         }
     }
 
+    public override void HandleInterrupts()
+    {
+        base.HandleInterrupts();
+        // Handle the interrupts and set conditions for exiting the state
+        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
+        {
+            stateMachine.ChangeState(rabbit.run);
+        }
+    }
 }

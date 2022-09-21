@@ -71,4 +71,15 @@ public class Idle : State
         }
     }
 
+    public override void HandleInterrupts()
+    {
+        base.HandleInterrupts();
+        Debug.Log("Idle Interrupted");
+        // Handle the interrupts and set conditions for exiting the state
+        if (rabbit.hasSeenPredator && !(rabbit.stateMachine.CurrentState == rabbit.run))
+        {
+            stateMachine.ChangeState(rabbit.run);
+        }
+    }
+
 }
