@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
- // This is an example of a base state. It is not used in the project.
+// This is an example of a base state. It is not used in the project.
 public class ExampleBaseState : State
 {
     // Condition variables set here

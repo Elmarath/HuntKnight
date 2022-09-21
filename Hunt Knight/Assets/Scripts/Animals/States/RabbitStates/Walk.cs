@@ -24,12 +24,12 @@ public class Walk : State // walks to a random destination if no destination giv
         rabbit.goWalk = true;
 
         // if Destination not set, then set a random destination
-        if(!isDestinationSet)
+        if (!isDestinationSet)
         {
             walkDestination = animal.CreateRandomDestination(animal.viewRadius, animal.viewAngle, animal.minSearchDistance);
             walkDestination.y = 0f;
         }
-        
+        animal.currentState = "Walk";
         walkDestination.y = 0f;
         animal.GotoDestination(walkDestination);
     }
@@ -37,13 +37,10 @@ public class Walk : State // walks to a random destination if no destination giv
     {
         base.HandleInput();
         // check while walking seen a nutrient and is it needed        
-        if(rabbit.hasSeenNutrient && rabbit.isNeedNutrient)
+        if (rabbit.hasSeenNutrient && rabbit.isNeedNutrient)
         {
             SetWalkDestination(rabbit.visibleNutrients[0].transform.position);
         }
-        
-        Vector3 _position = new Vector3(rabbit.transform.position.x, 0, rabbit.transform.position.z);
-
         isArrived = animal.IsCloseEnough(walkDestination, animal.closeEnoughTolerance);
     }
 
@@ -53,9 +50,11 @@ public class Walk : State // walks to a random destination if no destination giv
 
         // if is hungry and has seen nutrient and close enough -> go eat/drink
         // see if food is still avalible
-        if(rabbit.isNeedNutrient){
-            if(rabbit.visibleNutrients.Count > 0){
-                if(isArrived)
+        if (rabbit.isNeedNutrient)
+        {
+            if (rabbit.visibleNutrients.Count > 0)
+            {
+                if (isArrived)
                 {
                     stateMachine.ChangeState(rabbit.consume);
                     return;

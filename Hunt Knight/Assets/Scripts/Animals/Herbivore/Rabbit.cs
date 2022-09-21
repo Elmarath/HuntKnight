@@ -9,41 +9,46 @@ public class Rabbit : Herbivore
     #endregion
 
     #region StateVeriables
-        [HideInInspector]
-        public Idle idle;
-        [HideInInspector]
-        public Walk walk;
-        [HideInInspector]
-        public Consume consume;
-        [HideInInspector]
-        public Poop poop;
+    [HideInInspector]
+    public Idle idle;
+    [HideInInspector]
+    public Walk walk;
+    [HideInInspector]
+    public Consume consume;
+    [HideInInspector]
+    public Poop poop;
+    [HideInInspector]
+    public Run run;
     #endregion
 
     #region animationStringIds
-        private int goIdle_id;
-        private int goWalk_id;
-        private int goConsume_id;
-        private int goPoop_id;
+    private int goIdle_id;
+    private int goWalk_id;
+    private int goConsume_id;
+    private int goPoop_id;
+    private int goRun_id;
     #endregion
 
     // Control Variables for state machine
     #region stateChecks
-        [HideInInspector]
-        public bool goIdle = false;
-        [HideInInspector]
-        public bool goWalk = false;
-        [HideInInspector]
-        public bool goConsume = false;
-        [HideInInspector]
-        public bool goPoop = false;
-        [HideInInspector]
-        public bool hasSeenNutrient = false;
-        [HideInInspector]
-        public bool hasSeenPredator = false;
-        [HideInInspector]
-        public bool isNeedNutrient = false;
-        [HideInInspector]
-        public bool isReadyToPoop = false;
+    [HideInInspector]
+    public bool goIdle = false;
+    [HideInInspector]
+    public bool goWalk = false;
+    [HideInInspector]
+    public bool goConsume = false;
+    [HideInInspector]
+    public bool goPoop = false;
+    [HideInInspector]
+    public bool goRun = false;
+    [HideInInspector]
+    public bool hasSeenNutrient = false;
+    [HideInInspector]
+    public bool hasSeenPredator = false;
+    [HideInInspector]
+    public bool isNeedNutrient = false;
+    [HideInInspector]
+    public bool isReadyToPoop = false;
     #endregion
 
     void Awake()
@@ -58,10 +63,10 @@ public class Rabbit : Herbivore
     public override void UpdateState()
     {
         base.UpdateState();
-        
-        if(hasSeenPredator)
+
+        if (hasSeenPredator) // if seen predator run unless already running
         {
-            //Debug.Log("Rabbit has seen predator");
+            stateMachine.ChangeState(run);
         }
     }
 
@@ -69,17 +74,21 @@ public class Rabbit : Herbivore
     // Called every logicUpdateInterval
     // This method is used to update the animation variables of the animal
     // Base updates goIdle, goWalk
-    public override void UpdateAnimationVariables(){
+    public override void UpdateAnimationVariables()
+    {
         base.UpdateAnimationVariables();
         animator.SetBool(goIdle_id, goIdle);
         animator.SetBool(goWalk_id, goWalk);
         animator.SetBool(goConsume_id, goConsume);
+        animator.SetBool(goPoop_id, goPoop);
+        animator.SetBool(goRun_id, goRun);
     }
 
     //******* MUST BE FILLED*******//
     // Called every logicUpdateInterval
     // This method is for updating the stateChecks
-    public override void UpdateStateChecks(){
+    public override void UpdateStateChecks()
+    {
         // is there anything visible in field of view
         hasSeenNutrient = false;
         hasSeenPredator = false;
@@ -87,7 +96,7 @@ public class Rabbit : Herbivore
         visibleRunFroms.Clear();
         if (fieldOfView.GetVisibleTargets().Count > 0)
         {
-            for(int i = 0; i < fieldOfView.GetVisibleTargets().Count; i++)
+            for (int i = 0; i < fieldOfView.GetVisibleTargets().Count; i++)
             {
                 // is a nutriment visible
                 if (isLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, nutrientMask))
@@ -96,7 +105,7 @@ public class Rabbit : Herbivore
                     hasSeenNutrient = true;
                 }
                 // is animal to run from visible 
-                if(isLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, runFromMask))
+                if (isLayerInLayerMask(fieldOfView.GetVisibleTargets()[i].gameObject.layer, runFromMask))
                 {
                     visibleRunFroms.Add(fieldOfView.GetVisibleTargets()[i].gameObject);
                     hasSeenPredator = true;
@@ -119,6 +128,7 @@ public class Rabbit : Herbivore
         goWalk_id = Animator.StringToHash("goWalk");
         goConsume_id = Animator.StringToHash("goConsume");
         goPoop_id = Animator.StringToHash("goPoop");
+        goRun_id = Animator.StringToHash("goRun");
     }
 
 
@@ -133,6 +143,7 @@ public class Rabbit : Herbivore
         walk = new Walk(this, stateMachine);
         consume = new Consume(this, stateMachine);
         poop = new Poop(this, stateMachine);
+        run = new Run(this, stateMachine);
         stateMachine.Initialize(idle);
     }
 

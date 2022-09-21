@@ -7,5 +7,5 @@ using UnityEngine.AI;
 
 public class Carnivorous : MonoBehaviour
 {
-    
+
 }

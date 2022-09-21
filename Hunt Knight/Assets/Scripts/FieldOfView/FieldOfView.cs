@@ -28,7 +28,7 @@ public class FieldOfView : MonoBehaviour
             {
                 // Distance check
                 float dstToTarget = Vector3.Distance(transform.position, targetTransform.position);
-                if(dstToTarget < viewRadius)
+                if (dstToTarget < viewRadius)
                 {
                     // Check if there is an obstacle between the target and the agent
                     RaycastHit hit;
@@ -41,7 +41,7 @@ public class FieldOfView : MonoBehaviour
                         visibleTargets.Add(targetObject);
                     }
                 }
-            }  
+            }
             // if seen object is self remove
             if (targetObject == gameObject)
             {

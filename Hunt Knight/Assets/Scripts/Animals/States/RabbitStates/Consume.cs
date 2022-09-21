@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
- // This is an example of a base state. It is not used in the project.
+// This is an example of a base state. It is not used in the project.
 public class Consume : State
 {
     // Condition variables set here
@@ -23,6 +23,7 @@ public class Consume : State
         consumeTime = rabbit.consumeTime;
         timeWhenStateIsEntered = Time.time;
 
+        animal.currentState = "Consume";
         // Set Animation Variables
         rabbit.goConsume = true;
 
@@ -43,7 +44,7 @@ public class Consume : State
     {
         base.HandleInput();
         // Handle the input and set conditions for exiting the state
-        if((Time.time - timeWhenStateIsEntered) > consumeTime)
+        if ((Time.time - timeWhenStateIsEntered) > consumeTime)
         {
             isConsumeTimeOver = true;
         }
@@ -53,11 +54,11 @@ public class Consume : State
     {
         base.LogicUpdate();
 
-        if(isConsumeTimeOver)
+        if (isConsumeTimeOver)
         {
             stateMachine.ChangeState(rabbit.idle);
         }
-        
+
         // // check if consumable still exists
         // if(!(animal.visibleNutrients.Count > 0)) // if not
         // {

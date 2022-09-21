@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
- // This is an example of a base state. It is not used in the project.
+// This is an example of a base state. It is not used in the project.
 public class Poop : State
 {
     // Condition variables set here
@@ -23,7 +23,7 @@ public class Poop : State
         poopTime = rabbit.poopTime;
         timeWhenStateIsEntered = Time.time;
         rabbit.Poop(rabbit.animalExcrement, rabbit.transform.position);
-
+        animal.currentState = "Poop";
         // Set Animation Variables
         rabbit.goPoop = true;
 
@@ -45,7 +45,7 @@ public class Poop : State
     {
         base.HandleInput();
         // Handle the input and set conditions for exiting the state
-        if((Time.time - timeWhenStateIsEntered) > poopTime)
+        if ((Time.time - timeWhenStateIsEntered) > poopTime)
         {
             isPoopTimeOver = true;
         }
@@ -56,7 +56,7 @@ public class Poop : State
         base.LogicUpdate();
         Debug.Log(Time.time - timeWhenStateIsEntered);
 
-        if(isPoopTimeOver)
+        if (isPoopTimeOver)
         {
             stateMachine.ChangeState(rabbit.idle);
         }

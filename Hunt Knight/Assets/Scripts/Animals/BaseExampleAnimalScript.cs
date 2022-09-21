@@ -54,12 +54,13 @@ public class BaseExampleAnimalScript : Herbivore // It's either Herbivore or Car
     public override void UpdateState()
     {
         base.UpdateState();
-        
+
     }
 
     //******* MUST BE FILLED*******//
     // This method is used to update the animation variables of the animal
-    public override void UpdateAnimationVariables(){
+    public override void UpdateAnimationVariables()
+    {
         base.UpdateAnimationVariables();
         animator.SetBool(goIdle_id, goIdle);
         animator.SetBool(goWalk_id, goWalk);

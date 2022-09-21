@@ -22,7 +22,7 @@ public class NavigationTestScript : MonoBehaviour
     private IEnumerator coroutine;
 
     private Vector3 createdDestination;
-    
+
 
     // Start is called before the first frame update
     void Awake()
@@ -53,7 +53,7 @@ public class NavigationTestScript : MonoBehaviour
         Vector3 finalPosition;
         NavMeshHit hit;
 
-        for(int i = 0; i < 100; i++)
+        for (int i = 0; i < 100; i++)
         {
             randomDirectionV2 = Random.insideUnitCircle * viewRadius;
             randomDirection = new Vector3(randomDirectionV2.x, 0, randomDirectionV2.y);
@@ -62,19 +62,19 @@ public class NavigationTestScript : MonoBehaviour
             float distance = Vector3.Distance(randomDirection, transform.position);
 
             // Distance Check
-            if(distance < minSearchDistance)
+            if (distance < minSearchDistance)
             {
                 continue;
             }
             // Angle Check
-            if(Vector3.Angle(transform.forward, randomDirection - transform.position) > viewAngle / 2)
+            if (Vector3.Angle(transform.forward, randomDirection - transform.position) > viewAngle / 2)
             {
                 continue;
             }
 
             // Navigation Validation Check
             bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, 0.5f, NavMesh.AllAreas);
-            if(!isWalkable)
+            if (!isWalkable)
             {
                 continue;
             }
@@ -98,7 +98,7 @@ public class NavigationTestScript : MonoBehaviour
     private IEnumerator CreateRandomDestinationInSec(float waitTime)
     {
         while (true)
-        {   
+        {
             yield return new WaitForSeconds(waitTime);
             createdDestination = CreateRandomDestination(viewRadius, viewAngle, minSearchDistance);
         }
@@ -106,7 +106,7 @@ public class NavigationTestScript : MonoBehaviour
     private IEnumerator FindTargetsInSec(float waitTime)
     {
         while (true)
-        {   
+        {
             yield return new WaitForSeconds(waitTime);
             visibleTargets = fieldOfView.FindVisibleTargets();
         }

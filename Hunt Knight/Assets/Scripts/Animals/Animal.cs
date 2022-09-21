@@ -6,73 +6,74 @@ using UnityEngine.AI;
 public abstract class Animal : MonoBehaviour
 {
     #region LogicVeriables
-        [SerializeField]
-        [Range(0.1f, 1f)]
-        private float logicUpdateInterval = 0.25f; // how often the animal will update its logic
+    [Range(0.1f, 1f)]
+    public float logicUpdateInterval = 0.25f; // how often the animal will update its logic
+    public string currentState; // current state of the animal
     #endregion
 
     [Header("Animal Needs")]
     #region AnimalNeeds
-        [Range(1, 100)]
-        public float nutrientNeed = 0f;
-        [Range(1, 100)]
-        public float poopNeed = 0f;
-        public float nutrientNeedCapacity = 100f;
-        public float poopNeedCapacity= 100f;
-        public float nutrientNeedIncreaseRate = 1f; // per sec
-        public float poopNeedIncreaseRate = 1f; // per sec
-        public float needNutrientThreshold = 30f;
-        public float needToPoopThreshold = 90f;
-        [Space(20)]
+    [Range(1, 100)]
+    public float nutrientNeed = 0f;
+    [Range(1, 100)]
+    public float poopNeed = 0f;
+    public float nutrientNeedCapacity = 100f;
+    public float poopNeedCapacity = 100f;
+    public float nutrientNeedIncreaseRate = 1f; // per sec
+    public float poopNeedIncreaseRate = 1f; // per sec
+    public float needNutrientThreshold = 30f;
+    public float needToPoopThreshold = 90f;
+    [Space(20)]
     #endregion
 
     [Header("RabbitMovementAttributes")]
     #region AnimalAttributes
-        public float walkingSpeed;
-        public float idleTime;
-        public float consumeTime;
-        public float poopTime;
-        [Range(0.1f, 1f)]
-        public float closeEnoughTolerance;
-        [Range(1, 20)]
-        public float minSearchDistance; // min distance to search for anything
+    public float walkingSpeed;
+    public float runningSpeed;
+    public float idleTime;
+    public float consumeTime;
+    public float poopTime;
+    [Range(0.1f, 1f)]
+    public float closeEnoughTolerance;
+    [Range(1, 20)]
+    public float minSearchDistance; // min distance to search for anything
     #endregion
-    
+
     [Header("FieldOfView")]
     #region FieldOfView
-        [HideInInspector] private List<GameObject> visibleTargets = new List<GameObject>();
-        public List<GameObject> visibleNutrients = new List<GameObject>();
-        public List<GameObject> visibleRunFroms = new List<GameObject>();
-        [Range(1, 30)]
-        public float viewRadius = 5f;
-        [Range(1, 360)]
-        public float viewAngle = 120f;
-        [HideInInspector] public LayerMask targetMask;
-        [Space(20)]
+    [HideInInspector] private List<GameObject> visibleTargets = new List<GameObject>();
+    public List<GameObject> visibleNutrients = new List<GameObject>();
+    public List<GameObject> visibleRunFroms = new List<GameObject>();
+    [Range(1, 30)]
+    public float viewRadius = 5f;
+    [Range(1, 360)]
+    public float viewAngle = 120f;
+    [HideInInspector] public LayerMask targetMask;
+    [Space(20)]
     #endregion
 
     [Header("Indicators")]
     #region
-        public bool isIndicatorsWanted = false;
-        public GameObject movementIndicator;
-        public GameObject animalExcrement;
+    public bool isIndicatorsWanted = false;
+    public GameObject movementIndicator;
+    public GameObject animalExcrement;
     #endregion
 
     [Header("TargetLayerMask")]
     #region LayerMasks
-        public LayerMask nutrientMask; // layer mask for food and drinks
-        public LayerMask runFromMask; // Animal is wary of this layer gameobjects and will run away from them
+    public LayerMask nutrientMask; // layer mask for food and drinks
+    public LayerMask runFromMask; // Animal is wary of this layer gameobjects and will run away from them
     #endregion
 
     #region Attachments
-        [HideInInspector]
-        public StateMachine stateMachine;
-        [HideInInspector]
-        public NavMeshAgent agent;
-        [HideInInspector]
-        public Animator animator;
-        [HideInInspector]
-        public FieldOfView fieldOfView;
+    [HideInInspector]
+    public StateMachine stateMachine;
+    [HideInInspector]
+    public NavMeshAgent agent;
+    [HideInInspector]
+    public Animator animator;
+    [HideInInspector]
+    public FieldOfView fieldOfView;
     #endregion
 
     // Control Variables for state machine
@@ -88,11 +89,14 @@ public abstract class Animal : MonoBehaviour
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         fieldOfView = GetComponent<FieldOfView>();
-        
+
         targetMask = AddTwoMask(runFromMask, nutrientMask);
         fieldOfView.viewRadius = viewRadius;
         fieldOfView.viewAngle = viewAngle;
         fieldOfView.targetMask = targetMask;
+
+        // set navmesh values
+        agent.speed = walkingSpeed;
 
         SetAnimationNamesToIds();
         InitializeStates();
@@ -107,7 +111,7 @@ public abstract class Animal : MonoBehaviour
         //stateMachine.Initialize(idle);
     }
 
-    public virtual void UpdateStateMachine() 
+    public virtual void UpdateStateMachine()
     {
         UpdateState();
         stateMachine.CurrentState.HandleInput();
@@ -155,7 +159,7 @@ public abstract class Animal : MonoBehaviour
         // Clamp needs
         nutrientNeed = Mathf.Clamp(nutrientNeed, 0f, nutrientNeedCapacity);
         poopNeed = Mathf.Clamp(poopNeed, 0f, poopNeedCapacity);
-    }  
+    }
 
     // In this method the animal will check if it needs to do something (like eat, drink, poop, run etc)
     // Called every logicUpdateInterval
@@ -164,14 +168,14 @@ public abstract class Animal : MonoBehaviour
     }
 
     // Creates a random Destination which in the animals searchable area
-   public Vector3 CreateRandomDestination(float viewRadius, float viewAngle, float minSearchDistance)
+    public Vector3 CreateRandomDestination(float viewRadius, float viewAngle, float minSearchDistance)
     {
         Vector3 randomDirection;
         Vector2 randomDirectionV2;
         Vector3 finalPosition;
         NavMeshHit hit;
 
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             randomDirectionV2 = Random.insideUnitCircle * viewRadius;
             randomDirection = new Vector3(randomDirectionV2.x, 0, randomDirectionV2.y);
@@ -180,25 +184,25 @@ public abstract class Animal : MonoBehaviour
             float distance = Vector3.Distance(randomDirection, transform.position);
 
             // Distance Check
-            if(distance < minSearchDistance)
+            if (distance < minSearchDistance)
             {
                 continue;
             }
             // Angle Check
-            if(Vector3.Angle(transform.forward, randomDirection - transform.position) > viewAngle / 2)
+            if (Vector3.Angle(transform.forward, randomDirection - transform.position) > viewAngle / 2)
             {
                 continue;
             }
             // Navigation Validation Check
             bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, closeEnoughTolerance, NavMesh.AllAreas);
-            if(!isWalkable)
+            if (!isWalkable)
             {
                 continue;
             }
 
             finalPosition = randomDirection;
-            
-            if(isIndicatorsWanted)
+
+            if (isIndicatorsWanted)
             {
                 SpawnIndicator(movementIndicator, finalPosition);
             }
@@ -222,7 +226,7 @@ public abstract class Animal : MonoBehaviour
     public bool IsCloseEnough(Vector3 destination, float tolerance)
     {
         Vector3 _position = new Vector3(transform.position.x, 0, transform.position.z);
-        return  (Vector3.Distance(_position, destination) < tolerance);
+        return (Vector3.Distance(_position, destination) < tolerance);
     }
 
     // Spawns the given indicator in position
