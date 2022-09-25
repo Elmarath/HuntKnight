@@ -5,111 +5,149 @@ using UnityEngine.AI;
 
 public class NavigationTestScript : MonoBehaviour
 {
-    public GameObject movementIndicator;
+    public CommonAnimalAttributes animalAttributes;
 
-    public float logicUpdateInterval = 0.2f;
+    private NavMeshAgent agent;
 
-    public float viewRadius = 15f;
-    public float viewAngle = 120f;
-    public float minSearchDistance = 1f;
-
-    public List<GameObject> visibleTargets = new List<GameObject>();
-
-    public LayerMask targetMask;
-
-    private NavMeshAgent navMeshAgent;
-    private FieldOfView fieldOfView;
-    private IEnumerator coroutine;
-
-    private Vector3 createdDestination;
-
-
-    // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        fieldOfView = GetComponent<FieldOfView>();
-        fieldOfView.targetMask = targetMask;
-
-        StartCoroutine(CreateRandomDestinationInSec(logicUpdateInterval));
-        StartCoroutine(FindTargetsInSec(logicUpdateInterval));
+        agent = GetComponent<NavMeshAgent>();
     }
 
-    void LateUpdate()
+    private void Update()
     {
-        UpdateFieldOfViewAttributes(viewRadius, viewAngle);
-    }
-
-    public void UpdateFieldOfViewAttributes(float viewRadius, float viewAngle)
-    {
-        fieldOfView.viewRadius = viewRadius;
-        fieldOfView.viewAngle = viewAngle;
-    }
-
-    public Vector3 CreateRandomDestination(float viewRadius, float viewAngle, float minSearchDistance)
-    {
-        Vector3 randomDirection;
-        Vector2 randomDirectionV2;
-        Vector3 finalPosition;
-        NavMeshHit hit;
-
-        for (int i = 0; i < 100; i++)
+        // to create new destination
+        if (Input.GetKeyDown(KeyCode.Mouse2))
         {
-            randomDirectionV2 = Random.insideUnitCircle * viewRadius;
-            randomDirection = new Vector3(randomDirectionV2.x, 0, randomDirectionV2.y);
-            randomDirection += transform.position;
-
-            float distance = Vector3.Distance(randomDirection, transform.position);
-
-            // Distance Check
-            if (distance < minSearchDistance)
-            {
-                continue;
-            }
-            // Angle Check
-            if (Vector3.Angle(transform.forward, randomDirection - transform.position) > viewAngle / 2)
-            {
-                continue;
-            }
-
-            // Navigation Validation Check
-            bool isWalkable = NavMesh.SamplePosition(randomDirection, out hit, 0.5f, NavMesh.AllAreas);
-            if (!isWalkable)
-            {
-                continue;
-            }
-
-            finalPosition = hit.position;
-            finalPosition = randomDirection;
-            SpawnIndicator(movementIndicator, finalPosition);
-            return finalPosition;
+            Vector3 MousePositonOnPlane = GetMousePositionOnPlane();
+            CreateIndicator(MousePositonOnPlane, Color.yellow);
+            bool hasPathFound = GoDestination(agent, MousePositonOnPlane);
+            DrawNavMeshPath(agent);
         }
-        finalPosition = transform.position;
-        return finalPosition;
-    }
-
-    public void SpawnIndicator(GameObject indicator, Vector3 position)
-    {
-        GameObject _indicator = Instantiate(indicator, position, Quaternion.identity);
-        Destroy(_indicator, 5f);
-    }
-
-    // every logicUpdateInterval seconds perform a new search for a new destination
-    private IEnumerator CreateRandomDestinationInSec(float waitTime)
-    {
-        while (true)
+        // check if destination is reached if reached and forward is close turn around
+        if (IsDesinationReached(agent))
         {
-            yield return new WaitForSeconds(waitTime);
-            createdDestination = CreateRandomDestination(viewRadius, viewAngle, minSearchDistance);
-        }
-    }
-    private IEnumerator FindTargetsInSec(float waitTime)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(waitTime);
-            visibleTargets = fieldOfView.FindVisibleTargets();
+            if (!CheckForwardWalkable(agent, 2f))
+            {
+                CreateIndicator(agent.transform.position + (agent.transform.forward * 2f), Color.red, height: 5f);
+                RotateNavMeshAgent(agent, agent.transform.right * -2f, Time.deltaTime);
+            }
         }
     }
 
+    /// <summary>
+    /// Check if the agent is no longer have a path an in the stopping distance
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <returns></returns>
+    private bool IsDesinationReached(NavMeshAgent agent)
+    {
+        // Check if we've reached the destination
+        if (!agent.pathPending)
+        {
+            if (agent.remainingDistance <= agent.stoppingDistance)
+            {
+                if (!agent.hasPath || agent.velocity.sqrMagnitude < 0.1f)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Goes to target Destination in navmesh if the navmesh path is valid
+    /// </summary>
+    /// <param name="targetPosition"></param>
+    /// <returns>if new destination has found</returns>
+    private bool GoDestination(NavMeshAgent agent, Vector3 targetPosition)
+    {
+        Vector3 agentPreviousDestination = agent.destination;
+        NavMeshPath path = new NavMeshPath();
+        agent.CalculatePath(targetPosition, path);
+        if (path.status == NavMeshPathStatus.PathComplete)
+        {
+            agent.SetDestination(targetPosition);
+        }
+        else
+        {
+            Debug.Log("Path not valid");
+        }
+
+        return agentPreviousDestination != agent.destination;
+    }
+
+    /// <summary>
+    /// Draws a debug line to the target destination using navmesh path
+    /// </summary>
+    /// <param name="targetPosition"></param>
+    private void DrawNavMeshPath(NavMeshAgent agent)
+    {
+        NavMeshPath path = new NavMeshPath();
+        agent.CalculatePath(agent.destination, path);
+        for (int i = 0; i < path.corners.Length - 1; i++)
+        {
+            Debug.DrawLine(path.corners[i], path.corners[i + 1], Color.black, 3f, true);
+        }
+    }
+
+    /// <summary>
+    ///  Get mouse position
+    /// </summary>
+    /// <returns>Position of the hit, if couldn't find object to hit: Vector3.Zero</returns>
+    private Vector3 GetMousePositionOnPlane()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.point;
+        }
+        return Vector3.zero;
+    }
+
+    /// <summary>
+    /// Checks if the agents "distance" away is walkable
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="distance"></param>
+    /// <returns></returns>
+    private bool CheckForwardWalkable(NavMeshAgent agent, float distance)
+    {
+        Vector3 agentPreviousDestination = agent.destination;
+        NavMeshPath path = new NavMeshPath();
+        agent.CalculatePath(agent.transform.position + ((transform.forward) * distance), path);
+        if (path.status == NavMeshPathStatus.PathComplete)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    /// <summary>
+    /// Creates a capsule indicator at given position and Destroys it after 1 second
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="color" if not initialized default value will be black></param>
+    private void CreateIndicator(Vector3 position, Color color = default, float height = 0.5f)
+    {
+        if (position != Vector3.zero)
+        {
+            GameObject indicator = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            indicator.transform.position = position;
+            indicator.transform.localScale = new Vector3(0.1f, height, 0.1f);
+            indicator.transform.position = new Vector3(indicator.transform.position.x, indicator.transform.position.y + height, indicator.transform.position.z);
+            var indicatorRenderer = indicator.GetComponent<Renderer>();
+            indicatorRenderer.material.color = color;
+            Destroy(indicator, 1f);
+        }
+    }
+
+    private void RotateNavMeshAgent(NavMeshAgent agent, Vector3 targetPosition, float deltaTime, float rotationSpeed = 3f)
+    {
+        Vector3 direction = (targetPosition - agent.transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, lookRotation, deltaTime * rotationSpeed);
+    }
 }

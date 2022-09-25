@@ -9,16 +9,19 @@ public class LightingManager : MonoBehaviour
     [SerializeField] private LightingPreset preset;
     // Variables
     [SerializeField] [Range(0, 24)] private float timeOfDay;
+    [SerializeField] private float hoursPerMinute = 1f;
 
     private void Update()
     {
+        
+
         if(preset == null)
         {
             return;
         }
         if(Application.isPlaying)
         {
-            timeOfDay += Time.deltaTime;
+            timeOfDay += Time.deltaTime * (hoursPerMinute / 60f);
             timeOfDay %= 24; // clamp between 0 and 24
             UpdateLighting(timeOfDay / 24f);
         }
