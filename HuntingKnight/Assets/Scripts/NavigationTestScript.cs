@@ -6,7 +6,6 @@ using UnityEngine.AI;
 public class NavigationTestScript : MonoBehaviour
 {
     public CommonAnimalAttributes animalAttributes;
-
     private NavMeshAgent agent;
 
     private void Awake()
@@ -20,8 +19,9 @@ public class NavigationTestScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse2))
         {
             Vector3 MousePositonOnPlane = GetMousePositionOnPlane();
-            CreateIndicator(MousePositonOnPlane, Color.yellow);
             bool hasPathFound = GoDestination(agent, MousePositonOnPlane);
+            CreateIndicator(agent.destination, Color.yellow);
+            CreateCircle(agent.destination, agent.stoppingDistance, Color.blue);
             DrawNavMeshPath(agent);
         }
         // check if destination is reached if reached and forward is close turn around
@@ -33,6 +33,40 @@ public class NavigationTestScript : MonoBehaviour
                 RotateNavMeshAgent(agent, agent.transform.right * -2f, Time.deltaTime);
             }
         }
+        //MatchAgentToSurfaceSlope(agent);
+    }
+
+
+    private void MatchAgentToSurfaceSlope(NavMeshAgent agent)
+    {
+        // get the normal of the surface the agent is on
+        Vector3 surfaceNormal = GetSurfaceNormal(agent);
+        // get the angle between the surface normal and the up vector
+        float angle = Vector3.Angle(surfaceNormal, Vector3.up);
+        // get the rotation axis
+        Vector3 axis = Vector3.Cross(surfaceNormal, Vector3.up);
+        // create a rotation from the angle and axis
+        Quaternion rotation = Quaternion.AngleAxis(angle, axis);
+        // rotate the agent to match the surface slope
+        agent.transform.rotation = rotation;
+    }
+
+    private Vector3 GetSurfaceNormal(NavMeshAgent agent)
+    {
+        // get the position of the agent
+        Vector3 position = agent.transform.position;
+        // create a ray from the position to the surface
+        Ray ray = new Ray(position, Vector3.down);
+        // create a raycast hit to store the raycast hit information
+        RaycastHit hit;
+        // raycast to the surface
+        if (Physics.Raycast(ray, out hit))
+        {
+            // return the normal of the surface
+            return hit.normal;
+        }
+        // if the raycast did not hit anything return the up vector
+        return Vector3.up;
     }
 
     /// <summary>
@@ -144,10 +178,36 @@ public class NavigationTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Returns the angle between the agent and the target
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="targetPosition"></param>
+    /// <param name="deltaTime"></param>
+    /// <param name="rotationSpeed"></param>
     private void RotateNavMeshAgent(NavMeshAgent agent, Vector3 targetPosition, float deltaTime, float rotationSpeed = 3f)
     {
         Vector3 direction = (targetPosition - agent.transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
         agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, lookRotation, deltaTime * rotationSpeed);
     }
+
+    private void CreateCircle(Vector3 center, float radius, Color color = default)
+    {
+        int segments = 30;
+        float x;
+        float z;
+        float angle = 20f;
+
+        for (int i = 0; i < (segments + 1); i++)
+        {
+            x = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
+            z = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
+
+            Debug.DrawLine(new Vector3(center.x + x, center.y, center.z + z), new Vector3(center.x + x, center.y + 0.2f, center.z + z), color, 3f, true);
+
+            angle += (360f / segments);
+        }
+    }
+
 }

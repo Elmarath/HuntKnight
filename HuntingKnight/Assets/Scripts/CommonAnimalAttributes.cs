@@ -17,7 +17,8 @@ public class CommonAnimalAttributes : ScriptableObject
     public float poopTime = 1f;
     public float strength = 50f;
     public float attackSpeed = 1f;
-    public float sightRange = 5f;
+    public float sightRange = 15f;
+    public float sightAngle = 120f;
     public bool isTerritorial = false;
     public bool isStealthy = false;
 
@@ -25,4 +26,5 @@ public class CommonAnimalAttributes : ScriptableObject
     public LayerMask runFromThese;
     public LayerMask attackThese;
     public LayerMask eatThese;
+
 }

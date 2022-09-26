@@ -115,7 +115,6 @@ public abstract class Animal : MonoBehaviour
     {
         stateMachine.CurrentState.HandleInput();
         stateMachine.CurrentState.LogicUpdate();
-        stateMachine.CurrentState.HandleInterrupts();
         UpdateAnimationVariables();
     }
 

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c2ae53c2916c0546a309fb555e8b41a, type: 3}
+  m_Name: WolfAttributes
+  m_EditorClassIdentifier: 
+  nutrientCapacity: 100
+  holdingPoopCapacity: 100
+  Health: 100
+  walkSpeed: 1
+  runSpeed: 2.5
+  idleTime: 3
+  consumeTime: 1
+  poopTime: 1
+  strength: 50
+  attackSpeed: 1
+  sightRange: 15
+  sightAngle: 120
+  isTerritorial: 0
+  isStealthy: 0
+  runFromThese:
+    serializedVersion: 2
+    m_Bits: 0
+  attackThese:
+    serializedVersion: 2
+    m_Bits: 0
+  eatThese:
+    serializedVersion: 2
+    m_Bits: 0

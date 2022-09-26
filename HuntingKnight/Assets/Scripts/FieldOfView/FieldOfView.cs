@@ -10,17 +10,18 @@ public class FieldOfView : MonoBehaviour
     public float viewAngle = 120f;
     [HideInInspector]
     public LayerMask targetMask;
+    [HideInInspector]
     public LayerMask obstacleMask;
     public List<GameObject> visibleTargets = new List<GameObject>();
 
     public bool isFieldOfViewVisible = false;
     public bool isAtDanger = false;
-    public Color peacefulColor;
-    public Color dangerColor;
+    public Color peacefulColor = new Color(27, 147, 101, 35);
+    public Color dangerColor = new Color(147, 27, 59, 35);
 
-    public float meshResolution;
-    public int edgeResolveIterations;
-    public float edgeDstThreshold;
+    public float meshResolution = 5;
+    public int edgeResolveIterations = 5;
+    public float edgeDstThreshold = 5;
 
     public MeshFilter viewMeshFilter;
     public MeshRenderer viewMeshRenderer;

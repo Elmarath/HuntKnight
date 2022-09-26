@@ -22,8 +22,7 @@ public class SelectingObjetsInGame : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("Hit " + hit.transform.name);
-
+                Debug.Log("Hit layer: " + hit.transform.gameObject.layer);
                 if (AnimalHelper.IsLayerInLayerMask(hit.transform.gameObject.layer, selectableMask))
                 {
                     FieldOfView fieldOfView = hit.transform.gameObject.transform.parent.GetComponentInChildren<FieldOfView>();

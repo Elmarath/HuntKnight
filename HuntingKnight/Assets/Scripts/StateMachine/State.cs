@@ -1,23 +1,22 @@
 public abstract class State
 {
-    protected Animal animal;
+    protected CommonAnimal commonAnimal;
     protected StateMachine stateMachine;
 
-    protected State(Animal animal, StateMachine stateMachine)
+    protected State(CommonAnimal commonAnimal, StateMachine stateMachine)
     {
-        this.animal = animal;
+        this.commonAnimal = commonAnimal;
         this.stateMachine = stateMachine;
     }
 
     public virtual void Enter()
     {
-
+        commonAnimal.isStateFinished = false;
     }
 
     public virtual void HandleInput()
     {
         // whenever we exit the state stop coroutines
-        HandleInterrupts();
     }
     public virtual void LogicUpdate()
     {
@@ -25,12 +24,12 @@ public abstract class State
     }
     public virtual void Exit()
     {
-
+        commonAnimal.isStateFinished = true;
     }
 
-    public virtual void HandleInterrupts()
+    public virtual void HandleInterrupt()
     {
-        animal.HandleInterrupts();
+        commonAnimal.HandleInterrupt();
     }
 
 }
