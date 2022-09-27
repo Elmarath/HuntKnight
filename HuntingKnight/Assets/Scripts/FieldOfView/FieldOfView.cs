@@ -6,11 +6,8 @@ public class FieldOfView : MonoBehaviour
 {
     [HideInInspector]
     public float viewRadius = 10f;
-    [HideInInspector]
     public float viewAngle = 120f;
-    [HideInInspector]
     public LayerMask targetMask;
-    [HideInInspector]
     public LayerMask obstacleMask;
     public List<GameObject> visibleTargets = new List<GameObject>();
 
@@ -75,13 +72,7 @@ public class FieldOfView : MonoBehaviour
                     // Check if there is an obstacle between the target and the agent
                     RaycastHit hit;
                     Physics.Raycast(transform.position, dirToTarget, out hit);
-                    int hitObjectLayer = hit.transform.gameObject.layer;
-                    int targetObjectLayer = targetObject.layer;
-
-                    if (hitObjectLayer == targetObjectLayer)
-                    {
-                        visibleTargets.Add(targetObject);
-                    }
+                    visibleTargets.Add(targetObject);
                 }
             }
             // if seen object is self remove
@@ -90,7 +81,15 @@ public class FieldOfView : MonoBehaviour
                 visibleTargets.Remove(targetObject);
             }
         }
-
+        if (visibleTargets.Count > 0)
+        {
+            Debug.Log("Target in sight " + visibleTargets[0].layer);
+            isAtDanger = true;
+        }
+        else
+        {
+            isAtDanger = false;
+        }
         return visibleTargets;
     }
 

@@ -29374,6 +29374,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logicUpdateInterval: 0.25
   animalAttributes: {fileID: 11400000, guid: 382c3265806b7f34cb44208b6fdee886, type: 2}
+  visibleRunFromThese: []
+  visibleAttackThese: []
+  visibleEatThese: []
   agent: {fileID: 0}
   animator: {fileID: 0}
   fieldOfView: {fileID: 0}
@@ -29399,7 +29402,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1555849019132720}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -134.94171, y: 0.9990864, z: -149.25595}
+  m_LocalPosition: {x: -117.43, y: 0.9990864, z: -145.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 132445533920725433}
@@ -29441,7 +29444,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 0.67355037
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0

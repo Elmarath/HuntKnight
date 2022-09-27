@@ -6,23 +6,20 @@ using UnityEngine;
 public class IdleState : State
 {
     // Condition variables set here
-    private CommonAnimal _commonAnimal;
-    private StateMachine _stateMachine;
     private float _idleTime;
     private float _timeWhenEnteredState;
     private bool _isWaitTimeOver;
+    private bool _isForwardWalkable;
 
     public IdleState(CommonAnimal commonAnimal, StateMachine stateMachine) : base(commonAnimal, stateMachine)
     {
-        _commonAnimal = commonAnimal;
-        _stateMachine = stateMachine;
     }
 
     public override void Enter()
     {
         base.Enter();
         Debug.Log("Entered Idle State");
-        _commonAnimal.isIdling = true;
+        commonAnimal.isIdling = true;
         _idleTime = commonAnimal.animalAttributes.idleTime;
         _timeWhenEnteredState = Time.time;
     }
@@ -30,7 +27,7 @@ public class IdleState : State
     public override void Exit()
     {
         base.Exit();
-        _commonAnimal.isIdling = false;
+        commonAnimal.isIdling = false;
     }
     public override void HandleInput()
     {
@@ -43,7 +40,7 @@ public class IdleState : State
         base.LogicUpdate();
         if (_isWaitTimeOver)
         {
-            _stateMachine.ChangeState(commonAnimal.walkState);
+            stateMachine.ChangeState(commonAnimal.walkState);
         }
     }
 

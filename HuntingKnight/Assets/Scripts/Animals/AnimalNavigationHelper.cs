@@ -133,7 +133,7 @@ public static class AnimalNavigationHelper
             indicator.transform.position = new Vector3(indicator.transform.position.x, indicator.transform.position.y + height, indicator.transform.position.z);
             var indicatorRenderer = indicator.GetComponent<Renderer>();
             indicatorRenderer.material.color = color;
-            GameObject.Destroy(indicator, 3f);
+            GameObject.Destroy(indicator, 6f);
         }
     }
 
@@ -163,10 +163,21 @@ public static class AnimalNavigationHelper
             x = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
             z = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
 
-            Debug.DrawLine(new Vector3(center.x + x, center.y, center.z + z), new Vector3(center.x + x, center.y + height, center.z + z), color, 3f, true);
+            Debug.DrawLine(new Vector3(center.x + x, center.y, center.z + z), new Vector3(center.x + x, center.y + height, center.z + z), color, 6f, true);
 
             angle += (360f / segments);
         }
+    }
+
+    /// <summary>
+    /// Check if the layer is in the layermask
+    /// </summary>
+    /// <param name="layer"></param>
+    /// <param name="layerMask"></param>
+    /// <returns></returns>
+    public static bool IsLayerInLayerMask(int layer, LayerMask layerMask)
+    {
+        return layerMask == (layerMask | (1 << layer));
     }
 
     /// <summary>
@@ -174,44 +185,54 @@ public static class AnimalNavigationHelper
     /// if Color attribute is set the position will be drawn as an indicator
     /// </summary>
     /// <param name="agent"></param>
-    /// <param name="radius"></param>
-    /// <param name="viewAngle"></param>
+    /// <param name="fieldOfView"></param>
     /// <param name="color"></param>
     /// <returns></returns>
-    public static Vector3 GetRandomWalkablePosition(NavMeshAgent agent, float radius, float viewAngle, Color color = default)
+    public static Vector3 GetRandomWalkablePosition(NavMeshAgent agent, FieldOfView fieldOfView, Color color = default)
     {
         NavMeshPath path = new NavMeshPath();
         Vector3 randomDirection = Vector3.zero;
+        bool found = false;
 
         for (int i = 0; i < 20; i++)
         {
-            randomDirection = Random.insideUnitCircle * radius;
+            randomDirection = Random.insideUnitCircle * fieldOfView.viewRadius;
             randomDirection = new Vector3(randomDirection.x, 2, randomDirection.y) + agent.transform.position;
-
+            found = false;
             RaycastHit hit;
             Physics.Raycast(randomDirection, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Terrain"));
             randomDirection = hit.point;
 
             // check if the random position is in view angle
-            if (Vector3.Angle(agent.transform.forward, randomDirection - agent.transform.position) > viewAngle / 2)
+            if (Vector3.Angle(fieldOfView.transform.forward, randomDirection - fieldOfView.transform.position) > (fieldOfView.viewAngle / 2))
             {
+                found = false;
                 continue;
             }
-            if (IsCloseEnough(randomDirection, agent.transform.position, viewAngle / 20)) // if found loc is too close to the agent
+
+            if (IsCloseEnough(randomDirection, agent.transform.position, fieldOfView.viewRadius / 20)) // if found loc is too close to the agent
             {
+                found = false;
                 continue;
             }
+
             agent.CalculatePath(randomDirection, path);
 
             if (path.status != NavMeshPathStatus.PathComplete)
             {
+                found = false;
                 continue;
+            }
+            found = true;
+            if (found)
+            {
+                break;
             }
         }
 
         if (color != default)
         {
-            if (path.status == NavMeshPathStatus.PathComplete)
+            if (found)
             {
                 CreateCircle(randomDirection, agent.stoppingDistance, color);
                 CreateIndicator(randomDirection, color);
@@ -221,6 +242,165 @@ public static class AnimalNavigationHelper
                 CreateCircle(randomDirection, agent.stoppingDistance, Color.black);
                 CreateIndicator(randomDirection, Color.black);
             }
+        }
+
+        if (!found)
+        {
+            return Vector3.zero;
+        }
+
+        return randomDirection;
+    }
+
+    /// <summary>
+    /// Creates a random position considering agent's walkable area, position distance as radius, angle
+    /// if Color attribute is set the position will be drawn as an indicator
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="viewRadius"></param>
+    /// /// <param name="viewAngle"></param>
+    /// <param name="color"></param>
+    /// <returns></returns>
+    public static Vector3 GetRandomWalkablePosition(NavMeshAgent agent, float viewRadius, float viewAngle, Color color = default)
+    {
+        NavMeshPath path = new NavMeshPath();
+        Vector3 randomDirection = Vector3.zero;
+        bool found = false;
+
+        for (int i = 0; i < 20; i++)
+        {
+            randomDirection = Random.insideUnitCircle * viewRadius;
+            randomDirection = new Vector3(randomDirection.x, 2, randomDirection.y) + agent.transform.position;
+            found = false;
+            RaycastHit hit;
+            Physics.Raycast(randomDirection, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Terrain"));
+            randomDirection = hit.point;
+
+            // check if the random position is in view angle
+            if (Vector3.Angle(agent.transform.forward, randomDirection - agent.transform.position) > (viewAngle / 2))
+            {
+                found = false;
+                continue;
+            }
+
+            if (IsCloseEnough(randomDirection, agent.transform.position, viewRadius / 20)) // if found loc is too close to the agent
+            {
+                found = false;
+                continue;
+            }
+
+            agent.CalculatePath(randomDirection, path);
+
+            if (path.status != NavMeshPathStatus.PathComplete)
+            {
+                found = false;
+                continue;
+            }
+            found = true;
+            if (found)
+            {
+                break;
+            }
+        }
+
+        if (color != default)
+        {
+            if (found)
+            {
+                CreateCircle(randomDirection, agent.stoppingDistance, color);
+                CreateIndicator(randomDirection, color);
+            }
+            else
+            {
+                CreateCircle(randomDirection, agent.stoppingDistance, Color.black);
+                CreateIndicator(randomDirection, Color.black);
+            }
+        }
+
+        if (!found)
+        {
+            return Vector3.zero;
+        }
+
+        return randomDirection;
+    }
+
+    /// <summary>
+    /// Creates a random position considering in the direction of direction, agent's walkable area, position distance as radius, angle
+    /// if Color attribute is set the position will be drawn as an indicator.
+    /// if findPosLock is true the position will be found if not found in the first place without checking the direction or distance
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="direction"></param>
+    /// <param name="viewRadius"></param>
+    /// /// <param name="viewAngle"></param>
+    /// <param name="color"></param>
+    /// <param name="findPosLock"></param>
+    /// <returns></returns>
+    public static Vector3 GetRandomWalkablePosition(NavMeshAgent agent, Vector3 direction, float viewRadius, float viewAngle, bool findPosLock = false, Color color = default)
+    {
+        NavMeshPath path = new NavMeshPath();
+        Vector3 randomDirection = Vector3.zero;
+        bool found = false;
+
+        for (int i = 0; i < 30; i++)
+        {
+            randomDirection = Random.insideUnitCircle * viewRadius;
+            randomDirection = new Vector3(randomDirection.x, 2, randomDirection.y) + agent.transform.position;
+            found = false;
+            RaycastHit hit;
+            Physics.Raycast(randomDirection, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Terrain"));
+            randomDirection = hit.point;
+
+            // check if the random position is in view angle
+            if (Vector3.Angle(direction, randomDirection - agent.transform.position) > (viewAngle / 2))
+            {
+                found = false;
+                continue;
+            }
+
+            if (IsCloseEnough(randomDirection, agent.transform.position, viewRadius / 20)) // if found loc is too close to the agent
+            {
+                found = false;
+                continue;
+            }
+
+            agent.CalculatePath(randomDirection, path);
+
+            if (path.status != NavMeshPathStatus.PathComplete)
+            {
+                found = false;
+                continue;
+            }
+            found = true;
+            if (found)
+            {
+                break;
+            }
+        }
+
+        if (!found && findPosLock)
+        {
+            return GetRandomWalkablePosition(agent, viewRadius, viewAngle + 180, color);
+        }
+
+        if (color != default)
+        {
+            if (found)
+            {
+                CreateCircle(randomDirection, agent.stoppingDistance, color);
+                CreateIndicator(randomDirection, color);
+            }
+            else
+            {
+                CreateCircle(randomDirection, agent.stoppingDistance, Color.black);
+                CreateIndicator(randomDirection, Color.black);
+            }
+        }
+
+        if (!found)
+        {
+            return Vector3.zero;
         }
 
         return randomDirection;

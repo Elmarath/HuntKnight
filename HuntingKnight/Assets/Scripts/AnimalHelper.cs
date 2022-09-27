@@ -76,20 +76,4 @@ public static class AnimalHelper
         GameObject.Destroy(_indicator, 5f);
     }
 
-    // public static void ValidatePosition(ref Vector3 targetPosj)
-    //     {
-    //         if (navMeshAgent)
-    //         {
-    //             NavMeshHit hit;
-    //             if (!NavMesh.SamplePosition(targetPos, out hit, Mathf.Infinity, 1 << NavMesh.GetAreaFromName("Walkable")))
-    //             {
-    //                 Debug.LogError("Unable to sample nav mesh. Please ensure there's a Nav Mesh layer with the name Walkable");
-    //                 enabled = false;
-    //                 return;
-    //             }
-
-    //             targetPos = hit.position;
-    //         }
-    //     }
-
 }

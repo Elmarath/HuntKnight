@@ -16,7 +16,7 @@ MonoBehaviour:
   holdingPoopCapacity: 100
   Health: 100
   walkSpeed: 1
-  runSpeed: 2.5
+  runSpeed: 8
   idleTime: 3
   consumeTime: 1
   poopTime: 1
@@ -28,7 +28,7 @@ MonoBehaviour:
   isStealthy: 0
   runFromThese:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   attackThese:
     serializedVersion: 2
     m_Bits: 0

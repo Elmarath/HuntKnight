@@ -16,10 +16,9 @@ public class CommonAnimal : MonoBehaviour
 
     [Header("FieldOfView")]
     #region FieldOfView
-    [HideInInspector] private List<GameObject> visibleRunFromThese = new List<GameObject>();
-    [HideInInspector] private List<GameObject> visibleAttackThese = new List<GameObject>();
-    [HideInInspector] private List<GameObject> visibleEatThese = new List<GameObject>();
-    [HideInInspector] private LayerMask targetMask;
+    public List<GameObject> visibleRunFromThese = new List<GameObject>();
+    public List<GameObject> visibleAttackThese = new List<GameObject>();
+    public List<GameObject> visibleEatThese = new List<GameObject>();
     #endregion
 
     #region Attachments
@@ -62,13 +61,20 @@ public class CommonAnimal : MonoBehaviour
     [HideInInspector] public bool isStateFinished;
     #endregion
 
+    private int[] animatorParameters;
+
     [HideInInspector] public Vector3 walkToPosition = Vector3.zero;
 
     private void Awake()
     {
         Initialize();
         InvokeRepeating("UpdateStateMachine", 0f, logicUpdateInterval);
+        InvokeRepeating("UpdateInterruptStates", 0f, logicUpdateInterval);
         InvokeRepeating("UpdateAnimations", 0f, logicUpdateInterval);
+    }
+
+    private void Update()
+    {
     }
 
     public void Initialize()
@@ -77,7 +83,8 @@ public class CommonAnimal : MonoBehaviour
         animator = GetComponent<Animator>();
         fieldOfView = GetComponentInChildren<FieldOfView>();
         stateMachine = new StateMachine();
-        targetMask = animalAttributes.runFromThese | animalAttributes.attackThese | animalAttributes.eatThese;
+        animatorParameters = GetAnimatorParameters();
+        fieldOfView.targetMask = animalAttributes.runFromThese | animalAttributes.attackThese | animalAttributes.eatThese;
         fieldOfView.viewRadius = animalAttributes.sightRange;
         fieldOfView.viewAngle = animalAttributes.sightAngle;
         agent.speed = animalAttributes.walkSpeed;
@@ -86,12 +93,21 @@ public class CommonAnimal : MonoBehaviour
         InitializeStates();
     }
 
+    public void UpdateInterruptStates()
+    {
+        UpdateVisibleTargets();
+        if (visibleRunFromThese.Count > 0)
+        {
+            isRunning = true;
+        }
+    }
+
     public void UpdateVisibleTargets()
     {
         visibleRunFromThese.Clear();
         visibleAttackThese.Clear();
         visibleEatThese.Clear();
-        foreach (GameObject target in fieldOfView.visibleTargets)
+        foreach (GameObject target in fieldOfView.FindVisibleTargets())
         {
             if (animalAttributes.runFromThese == (animalAttributes.runFromThese | (1 << target.layer)))
             {
@@ -100,6 +116,7 @@ public class CommonAnimal : MonoBehaviour
             if (animalAttributes.attackThese == (animalAttributes.attackThese | (1 << target.layer)))
             {
                 visibleAttackThese.Add(target);
+
             }
             if (animalAttributes.eatThese == (animalAttributes.eatThese | (1 << target.layer)))
             {
@@ -133,9 +150,9 @@ public class CommonAnimal : MonoBehaviour
         stateMachine.CurrentState.HandleInterrupt();
     }
 
-    public int[] GetAnimationParameters()
+    public int[] GetAnimatorParameters()
     {
-        int[] animatorParameters = new int[animator.parameterCount];
+        animatorParameters = new int[animator.parameterCount];
         for (int i = 0; i < animator.parameterCount; i++)
         {
             animatorParameters[i] = animator.GetParameter(i).nameHash;
@@ -145,7 +162,6 @@ public class CommonAnimal : MonoBehaviour
 
     public void UpdateAnimations()
     {
-        int[] animatorParameters = GetAnimationParameters();
         animator.SetBool(animatorParameters[0], stateMachine.CurrentState == idleState);
         animator.SetBool(animatorParameters[1], stateMachine.CurrentState == deathState);
         animator.SetBool(animatorParameters[2], stateMachine.CurrentState == attackState);
@@ -162,6 +178,25 @@ public class CommonAnimal : MonoBehaviour
 
     public void HandleInterrupt()
     {
-
+        if (isDead)
+        {
+            stateMachine.ChangeState(deathState);
+        }
+        else if (isTakingDamage)
+        {
+            stateMachine.ChangeState(takeDamageState);
+        }
+        else if (isRunning)
+        {
+            stateMachine.ChangeState(runState);
+        }
+        else if (isAttacking)
+        {
+            stateMachine.ChangeState(attackState);
+        }
+        else if (isCustom)
+        {
+            stateMachine.ChangeState(customState);
+        }
     }
 }
