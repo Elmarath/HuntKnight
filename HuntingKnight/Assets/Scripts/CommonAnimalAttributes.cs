@@ -17,6 +17,7 @@ public class CommonAnimalAttributes : ScriptableObject
     public float poopTime = 1f;
     public float strength = 50f;
     public float attackSpeed = 1f;
+    public float attackRange = 2f;
     public float sightRange = 15f;
     public float sightAngle = 120f;
     public bool isTerritorial = false;

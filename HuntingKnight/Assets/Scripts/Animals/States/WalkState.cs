@@ -15,8 +15,8 @@ public class WalkState : State
     public override void Enter()
     {
         base.Enter();
+        commonAnimal.animations.PlayAnimation(commonAnimal.animations.WALK);
         Debug.Log("Entered Walk State");
-        commonAnimal.isWalking = true;
 
         // check if animal wants to walk to a specific point
         if (commonAnimal.walkToPosition != Vector3.zero)
@@ -35,7 +35,6 @@ public class WalkState : State
     public override void Exit()
     {
         base.Exit();
-        commonAnimal.isWalking = false;
         // When exiting set the animation variables
     }
     public override void HandleInput()

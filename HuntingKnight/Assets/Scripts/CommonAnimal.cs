@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CommonAnimal : MonoBehaviour
+public abstract class CommonAnimal : MonoBehaviour
 {
 
     #region LogicVeriables
@@ -16,9 +16,9 @@ public class CommonAnimal : MonoBehaviour
 
     [Header("FieldOfView")]
     #region FieldOfView
-    public List<GameObject> visibleRunFromThese = new List<GameObject>();
-    public List<GameObject> visibleAttackThese = new List<GameObject>();
-    public List<GameObject> visibleEatThese = new List<GameObject>();
+    [HideInInspector] public List<GameObject> visibleRunFromThese = new List<GameObject>();
+    [HideInInspector] public List<GameObject> visibleAttackThese = new List<GameObject>();
+    [HideInInspector] public List<GameObject> visibleEatThese = new List<GameObject>();
     #endregion
 
     #region Attachments
@@ -26,6 +26,7 @@ public class CommonAnimal : MonoBehaviour
     [HideInInspector] public NavMeshAgent agent;
     [HideInInspector] public Animator animator;
     [HideInInspector] public FieldOfView fieldOfView;
+    [HideInInspector] public CommonAnimalAnimations animations;
     #endregion
 
     #region States
@@ -46,22 +47,13 @@ public class CommonAnimal : MonoBehaviour
     // for changing states and their animations 
     // (not the state we are in but the state we are going to be in)
     #region StateCondisitons
-    [HideInInspector] public bool isIdling;
     [HideInInspector] public bool isDead;
     [HideInInspector] public bool isAttacking;
-    [HideInInspector] public bool isWalking;
     [HideInInspector] public bool isRunning;
-    [HideInInspector] public bool isEating;
-    [HideInInspector] public bool isExcreting;
-    [HideInInspector] public bool isMating;
-    [HideInInspector] public bool isMakingBirth;
     [HideInInspector] public bool isTakingDamage;
     [HideInInspector] public bool isTakingCover;
     [HideInInspector] public bool isCustom;
-    [HideInInspector] public bool isStateFinished;
     #endregion
-
-    private int[] animatorParameters;
 
     [HideInInspector] public Vector3 walkToPosition = Vector3.zero;
 
@@ -70,20 +62,15 @@ public class CommonAnimal : MonoBehaviour
         Initialize();
         InvokeRepeating("UpdateStateMachine", 0f, logicUpdateInterval);
         InvokeRepeating("UpdateInterruptStates", 0f, logicUpdateInterval);
-        InvokeRepeating("UpdateAnimations", 0f, logicUpdateInterval);
     }
 
-    private void Update()
-    {
-    }
-
-    public void Initialize()
+    public virtual void Initialize()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         fieldOfView = GetComponentInChildren<FieldOfView>();
         stateMachine = new StateMachine();
-        animatorParameters = GetAnimatorParameters();
+        animations = new CommonAnimalAnimations(animator);
         fieldOfView.targetMask = animalAttributes.runFromThese | animalAttributes.attackThese | animalAttributes.eatThese;
         fieldOfView.viewRadius = animalAttributes.sightRange;
         fieldOfView.viewAngle = animalAttributes.sightAngle;
@@ -93,16 +80,16 @@ public class CommonAnimal : MonoBehaviour
         InitializeStates();
     }
 
-    public void UpdateInterruptStates()
+    public virtual void UpdateInterruptStates()
     {
         UpdateVisibleTargets();
-        if (visibleRunFromThese.Count > 0)
+        if (visibleRunFromThese.Count > 0 || visibleAttackThese.Count > 0)
         {
             isRunning = true;
         }
     }
 
-    public void UpdateVisibleTargets()
+    public virtual void UpdateVisibleTargets()
     {
         visibleRunFromThese.Clear();
         visibleAttackThese.Clear();
@@ -125,7 +112,7 @@ public class CommonAnimal : MonoBehaviour
         }
     }
 
-    public void InitializeStates()
+    public virtual void InitializeStates()
     {
         attackState = new AttackState(this, stateMachine);
         customState = new CustomState(this, stateMachine);
@@ -143,40 +130,14 @@ public class CommonAnimal : MonoBehaviour
         stateMachine.Initialize(idleState);
     }
 
-    public void UpdateStateMachine()
+    public virtual void UpdateStateMachine()
     {
         stateMachine.CurrentState.HandleInput();
         stateMachine.CurrentState.LogicUpdate();
         stateMachine.CurrentState.HandleInterrupt();
     }
 
-    public int[] GetAnimatorParameters()
-    {
-        animatorParameters = new int[animator.parameterCount];
-        for (int i = 0; i < animator.parameterCount; i++)
-        {
-            animatorParameters[i] = animator.GetParameter(i).nameHash;
-        }
-        return animatorParameters;
-    }
-
-    public void UpdateAnimations()
-    {
-        animator.SetBool(animatorParameters[0], stateMachine.CurrentState == idleState);
-        animator.SetBool(animatorParameters[1], stateMachine.CurrentState == deathState);
-        animator.SetBool(animatorParameters[2], stateMachine.CurrentState == attackState);
-        animator.SetBool(animatorParameters[3], stateMachine.CurrentState == walkState);
-        animator.SetBool(animatorParameters[4], stateMachine.CurrentState == runState);
-        animator.SetBool(animatorParameters[5], stateMachine.CurrentState == eatState);
-        animator.SetBool(animatorParameters[6], stateMachine.CurrentState == excreteState);
-        animator.SetBool(animatorParameters[7], stateMachine.CurrentState == mateState);
-        animator.SetBool(animatorParameters[8], stateMachine.CurrentState == makeBirthState);
-        animator.SetBool(animatorParameters[9], stateMachine.CurrentState == takeDamageState);
-        animator.SetBool(animatorParameters[10], stateMachine.CurrentState == customState);
-        animator.SetBool(animatorParameters[11], isStateFinished);
-    }
-
-    public void HandleInterrupt()
+    public virtual void HandleInterrupt()
     {
         if (isDead)
         {
@@ -199,4 +160,5 @@ public class CommonAnimal : MonoBehaviour
             stateMachine.ChangeState(customState);
         }
     }
+
 }

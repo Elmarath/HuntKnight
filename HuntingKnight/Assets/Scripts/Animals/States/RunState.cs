@@ -10,6 +10,7 @@ public class RunState : State
     private bool _isChasing;
     private bool _isDestinationReachable;
     private int _recentlyChased = 0;
+    private bool _readyToAttack = false;
     private Transform _target;
 
     public RunState(CommonAnimal commonAnimal, StateMachine stateMachine) : base(commonAnimal, stateMachine)
@@ -19,6 +20,9 @@ public class RunState : State
     public override void Enter()
     {
         base.Enter();
+        _readyToAttack = false;
+        commonAnimal.animations.PlayAnimation(commonAnimal.animations.RUN);
+        commonAnimal.fieldOfView.viewAngle = 330f; // if it sees it would look at it so larger angle given
         commonAnimal.isRunning = true;
         commonAnimal.agent.speed = commonAnimal.animalAttributes.runSpeed;
         commonAnimal.agent.acceleration = 16;
@@ -50,7 +54,9 @@ public class RunState : State
         base.Exit();
         _isGettingChased = true;
         _isChasing = false;
+        _target = null;
         commonAnimal.isRunning = false;
+        commonAnimal.fieldOfView.viewAngle = commonAnimal.animalAttributes.sightAngle;
         commonAnimal.agent.speed = commonAnimal.animalAttributes.walkSpeed;
         commonAnimal.agent.stoppingDistance = 0.5f;
         commonAnimal.agent.acceleration = 8;
@@ -90,8 +96,21 @@ public class RunState : State
             }
         }
 
-
-        // Handle the input and set conditions for exiting the state
+        else if (_isChasing)
+        {
+            if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position, _target.position, commonAnimal.animalAttributes.sightRange))
+            {
+                _isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, _target.position);
+                if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position, _target.position, commonAnimal.animalAttributes.attackRange))
+                {
+                    _readyToAttack = true;
+                }
+            }
+            else
+            {
+                _isChasing = false;
+            }
+        }
     }
 
     public override void LogicUpdate()
@@ -103,9 +122,16 @@ public class RunState : State
             stateMachine.ChangeState(commonAnimal.idleState);
         }
 
+        else if (_readyToAttack)
+        {
+            Debug.Log("Ready to attack");
+            stateMachine.ChangeState(commonAnimal.attackState);
+        }
+
         else if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position,
      commonAnimal.agent.destination, commonAnimal.agent.stoppingDistance + 1) && !_isGettingChased)
         {
+            commonAnimal.agent.velocity *= 0.5f;
             stateMachine.ChangeState(commonAnimal.idleState);
         }
 

@@ -14,6 +14,7 @@ public class ExcreteState : State
     public override void Enter()
     {
         base.Enter();
+        commonAnimal.animations.PlayAnimation(commonAnimal.animations.EXCRETE);
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
     }

@@ -21,17 +21,18 @@ MonoBehaviour:
   consumeTime: 1
   poopTime: 1
   strength: 50
-  attackSpeed: 1
+  attackSpeed: 3
+  attackRange: 4
   sightRange: 15
   sightAngle: 120
   isTerritorial: 0
   isStealthy: 0
   runFromThese:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   attackThese:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   eatThese:
     serializedVersion: 2
     m_Bits: 0

@@ -23,7 +23,7 @@ public class SelectingObjetsInGame : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Debug.Log("Hit layer: " + hit.transform.gameObject.layer);
-                if (AnimalHelper.IsLayerInLayerMask(hit.transform.gameObject.layer, selectableMask))
+                if (AnimalNavigationHelper.IsLayerInLayerMask(hit.transform.gameObject.layer, selectableMask))
                 {
                     FieldOfView fieldOfView = hit.transform.gameObject.transform.parent.GetComponentInChildren<FieldOfView>();
                     fieldOfView.isFieldOfViewVisible = !fieldOfView.isFieldOfViewVisible;

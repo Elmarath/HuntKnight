@@ -7,10 +7,10 @@ public class AnimationTestScript : MonoBehaviour
 {
     private Animator animator;
     private NavMeshAgent agent;
-    private string currentAnimation = "isIdling";
+    private string currentAnimation = "Walking";
     private string exAnimation = "null";
 
-    public bool button;
+    public bool button = true;
 
     private void Awake()
     {
@@ -20,37 +20,10 @@ public class AnimationTestScript : MonoBehaviour
 
     private void Update()
     {
-        UpdateAnimations();
-    }
-
-    private void UpdateAnimations()
-    {
-
-        if (agent.velocity.magnitude > 0.1f)
+        if (button)
         {
-            currentAnimation = "isWalking";
+            animator.CrossFade("Walking", 0.2f);
+            button = false;
         }
-        else
-        {
-            currentAnimation = "isIdling";
-        }
-
-        bool isSwitchedAnimation = !(exAnimation == currentAnimation);
-
-        if (isSwitchedAnimation)
-        {
-            if (agent.velocity.magnitude > 0.1f)
-            {
-                animator.SetTrigger("isWalking");
-                currentAnimation = "isWalking";
-            }
-            else
-            {
-                animator.SetTrigger("isIdling");
-                currentAnimation = "isIdling";
-            }
-            exAnimation = currentAnimation;
-        }
-
     }
 }

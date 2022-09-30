@@ -11,7 +11,6 @@ public abstract class State
 
     public virtual void Enter()
     {
-        commonAnimal.isStateFinished = false;
     }
 
     public virtual void HandleInput()
@@ -24,7 +23,6 @@ public abstract class State
     }
     public virtual void Exit()
     {
-        commonAnimal.isStateFinished = true;
     }
 
     public virtual void HandleInterrupt()

@@ -19,7 +19,7 @@ public class IdleState : State
     {
         base.Enter();
         Debug.Log("Entered Idle State");
-        commonAnimal.isIdling = true;
+        commonAnimal.animations.PlayAnimation(commonAnimal.animations.IDLE);
         _idleTime = commonAnimal.animalAttributes.idleTime;
         _timeWhenEnteredState = Time.time;
     }
@@ -27,7 +27,6 @@ public class IdleState : State
     public override void Exit()
     {
         base.Exit();
-        commonAnimal.isIdling = false;
     }
     public override void HandleInput()
     {
