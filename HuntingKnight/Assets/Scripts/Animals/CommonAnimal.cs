@@ -38,10 +38,12 @@ public abstract class CommonAnimal : MonoBehaviour
     [HideInInspector] public State idleState;
     [HideInInspector] public State makeBirthState;
     [HideInInspector] public State mateState;
-    [HideInInspector] public State runState;
+    [HideInInspector] public State fleeState;
+    [HideInInspector] public State chaseState;
     [HideInInspector] public State takeDamageState;
     [HideInInspector] public State walkState;
     [HideInInspector] public State takeCoverState;
+    [HideInInspector] public bool stateLock;
     #endregion
 
     // for changing states and their animations 
@@ -49,13 +51,27 @@ public abstract class CommonAnimal : MonoBehaviour
     #region StateCondisitons
     [HideInInspector] public bool isDead;
     [HideInInspector] public bool isAttacking;
-    [HideInInspector] public bool isRunning;
+    [HideInInspector] public bool isChasing;
+    [HideInInspector] public bool isFleeing;
     [HideInInspector] public bool isTakingDamage;
     [HideInInspector] public bool isTakingCover;
     [HideInInspector] public bool isCustom;
     #endregion
 
     [HideInInspector] public Vector3 walkToPosition = Vector3.zero;
+
+    #region animalStats
+    [HideInInspector] public float currentHealth;
+    [HideInInspector] public float currentStamina;
+    [HideInInspector] public float currentNutrientNeed;
+    [HideInInspector] public float currentPoopNeed;
+    [HideInInspector] public bool isHealthDepleted;
+    [HideInInspector] public bool isStaminaDepleted;
+    [HideInInspector] public bool isNutrientNeedCritical;
+    [HideInInspector] public bool isPoopNeedCritical;
+
+    [HideInInspector] public bool isStaminaBeeingUsed;
+    #endregion
 
     private void Awake()
     {
@@ -77,15 +93,26 @@ public abstract class CommonAnimal : MonoBehaviour
         agent.speed = animalAttributes.walkSpeed;
         agent.angularSpeed = 240f;
 
+        currentHealth = animalAttributes.health;
+        currentStamina = animalAttributes.stamina;
+        currentNutrientNeed = 0f;
+        currentPoopNeed = 0f;
+
         InitializeStates();
     }
 
     public virtual void UpdateInterruptStates()
     {
         UpdateVisibleTargets();
-        if (visibleRunFromThese.Count > 0 || visibleAttackThese.Count > 0)
+        UpdateAnimalStats();
+
+        if (visibleRunFromThese.Count > 0 && !isStaminaDepleted)
         {
-            isRunning = true;
+            isFleeing = true;
+        }
+        else if (visibleAttackThese.Count > 0 && !isStaminaDepleted)
+        {
+            isChasing = true;
         }
     }
 
@@ -103,13 +130,36 @@ public abstract class CommonAnimal : MonoBehaviour
             if (animalAttributes.attackThese == (animalAttributes.attackThese | (1 << target.layer)))
             {
                 visibleAttackThese.Add(target);
-
             }
             if (animalAttributes.eatThese == (animalAttributes.eatThese | (1 << target.layer)))
             {
                 visibleEatThese.Add(target);
             }
         }
+    }
+
+    public virtual void UpdateAnimalStats()
+    {
+        currentNutrientNeed += animalAttributes.nutrientIncreaseRate * logicUpdateInterval;
+        currentPoopNeed += animalAttributes.poopIncreaseRate * logicUpdateInterval;
+        if (!isStaminaBeeingUsed)
+        {
+            currentStamina += animalAttributes.staminaIncreaseRate * logicUpdateInterval;
+        }
+        else
+        {
+            currentStamina -= animalAttributes.staminaDecreaseRate * logicUpdateInterval;
+        }
+
+        currentHealth = Mathf.Clamp(currentHealth, 0f, animalAttributes.health);
+        currentStamina = Mathf.Clamp(currentStamina, 0f, animalAttributes.stamina);
+        currentNutrientNeed = Mathf.Clamp(currentNutrientNeed, 0f, animalAttributes.nutrientCapacity);
+        currentPoopNeed = Mathf.Clamp(currentPoopNeed, 0f, animalAttributes.holdingPoopCapacity);
+
+        isHealthDepleted = currentHealth <= 0f;
+        isStaminaDepleted = currentStamina <= 0f;
+        isNutrientNeedCritical = currentNutrientNeed >= animalAttributes.nutientThreshold;
+        isPoopNeedCritical = currentPoopNeed >= animalAttributes.poopThreshold;
     }
 
     public virtual void InitializeStates()
@@ -122,7 +172,8 @@ public abstract class CommonAnimal : MonoBehaviour
         idleState = new IdleState(this, stateMachine);
         makeBirthState = new MakeBirthState(this, stateMachine);
         mateState = new MateState(this, stateMachine);
-        runState = new RunState(this, stateMachine);
+        chaseState = new ChaseState(this, stateMachine);
+        fleeState = new FleeState(this, stateMachine);
         takeDamageState = new TakeDamageState(this, stateMachine);
         walkState = new WalkState(this, stateMachine);
         takeCoverState = new TakeCoverState(this, stateMachine);
@@ -139,25 +190,32 @@ public abstract class CommonAnimal : MonoBehaviour
 
     public virtual void HandleInterrupt()
     {
-        if (isDead)
+        if (!stateLock)
         {
-            stateMachine.ChangeState(deathState);
-        }
-        else if (isTakingDamage)
-        {
-            stateMachine.ChangeState(takeDamageState);
-        }
-        else if (isRunning)
-        {
-            stateMachine.ChangeState(runState);
-        }
-        else if (isAttacking)
-        {
-            stateMachine.ChangeState(attackState);
-        }
-        else if (isCustom)
-        {
-            stateMachine.ChangeState(customState);
+            if (isDead && stateMachine.CurrentState != deathState)
+            {
+                stateMachine.ChangeState(deathState);
+            }
+            else if (isTakingDamage && stateMachine.CurrentState != takeDamageState)
+            {
+                stateMachine.ChangeState(takeDamageState);
+            }
+            else if (isFleeing && stateMachine.CurrentState != fleeState)
+            {
+                stateMachine.ChangeState(fleeState);
+            }
+            else if (isChasing && stateMachine.CurrentState != chaseState)
+            {
+                stateMachine.ChangeState(chaseState);
+            }
+            else if (isTakingCover && stateMachine.CurrentState != takeCoverState)
+            {
+                stateMachine.ChangeState(takeCoverState);
+            }
+            else if (isCustom && stateMachine.CurrentState != customState)
+            {
+                stateMachine.ChangeState(customState);
+            }
         }
     }
 

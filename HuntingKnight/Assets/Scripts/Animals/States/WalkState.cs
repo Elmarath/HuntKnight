@@ -16,7 +16,6 @@ public class WalkState : State
     {
         base.Enter();
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.WALK);
-        Debug.Log("Entered Walk State");
 
         // check if animal wants to walk to a specific point
         if (commonAnimal.walkToPosition != Vector3.zero)

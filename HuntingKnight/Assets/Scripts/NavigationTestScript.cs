@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class NavigationTestScript : MonoBehaviour
 {
     public CommonAnimalAttributes animalAttributes;
+    public bool isBeingAttacked;
     private NavMeshAgent agent;
 
     private void Awake()
@@ -32,6 +33,12 @@ public class NavigationTestScript : MonoBehaviour
                 CreateIndicator(agent.transform.position + (agent.transform.forward * 2f), Color.red, height: 5f);
                 RotateNavMeshAgent(agent, agent.transform.right * -2f, Time.deltaTime);
             }
+        }
+
+        if (isBeingAttacked)
+        {
+            Debug.Log("BeingAttacked");
+            isBeingAttacked = false;
         }
         //MatchAgentToSurfaceSlope(agent);
     }

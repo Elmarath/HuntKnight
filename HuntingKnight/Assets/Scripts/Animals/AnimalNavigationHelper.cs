@@ -405,6 +405,123 @@ public static class AnimalNavigationHelper
 
         return randomDirection;
     }
+
+
+    public static Vector3 GetEscapePosition(NavMeshAgent agent, Vector3 direction, float escapeRadius = 20f)
+    {
+        Vector3 escapePosition = Vector3.zero;
+        Vector3 basePosition = agent.transform.position + new Vector3(0, 5, 0);
+        NavMeshPath _path = new NavMeshPath();
+        Vector3 _direction = direction;
+        Vector3 _foundPositon = Vector3.zero;
+        RaycastHit _hit;
+        bool _found = false;
+
+        for (int i = (int)escapeRadius; i > 0; i--)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                _direction = Quaternion.AngleAxis(45 * j, Vector3.up) * direction;
+                _direction = _direction.normalized * i;
+                _foundPositon = basePosition + _direction;
+                Physics.Raycast(_foundPositon, Vector3.down, out _hit, Mathf.Infinity, LayerMask.GetMask("Terrain"));
+                _foundPositon = _hit.point;
+                agent.CalculatePath(_foundPositon, _path);
+                if (_path.status == NavMeshPathStatus.PathComplete)
+                {
+                    _found = true;
+                    break;
+                }
+            }
+            if (_found)
+            {
+                break;
+            }
+        }
+
+        if (_found)
+        {
+            CreateIndicator(_foundPositon, Color.red);
+            escapePosition = _foundPositon;
+        }
+        return escapePosition;
+    }
+
+
+    /// <summary>
+    /// Returns the closest gameobject to the agent from given list of gameobjects
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="targets"></param>
+    /// <returns></returns>
+
+    public static GameObject GetClosestGameObject(NavMeshAgent agent, GameObject[] targets)
+    {
+        GameObject closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (GameObject target in targets)
+        {
+            float distance = Vector3.Distance(agent.transform.position, target.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = target;
+            }
+        }
+
+        return closestTarget;
+    }
+
+    /// <summary>
+    /// Returns the closest collider to the agent from given list of gameobjects
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="targets"></param>
+    /// <returns></returns>
+
+    public static Collider GetClosestCollider(NavMeshAgent agent, Collider[] targets)
+    {
+        Collider closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Collider target in targets)
+        {
+            float distance = Vector3.Distance(agent.transform.position, target.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = target;
+            }
+        }
+
+        return closestTarget;
+    }
+
+    /// <summary>
+    /// Returns the closest collider to the agent from given list of transfroms
+    /// </summary>
+    /// <param name="agent"></param>
+    /// <param name="targets"></param>
+    /// <returns></returns>
+
+    public static Transform GetClosestTransform(NavMeshAgent agent, Transform[] targets)
+    {
+        Transform closestTarget = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Transform target in targets)
+        {
+            float distance = Vector3.Distance(agent.transform.position, target.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = target;
+            }
+        }
+
+        return closestTarget;
+    }
 }
 
 

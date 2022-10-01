@@ -14,19 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nutrientCapacity: 100
   holdingPoopCapacity: 100
-  Health: 100
+  health: 100
+  angularSpeed: 180
   walkSpeed: 1
   runSpeed: 8
+  stamina: 50
   idleTime: 3
   consumeTime: 1
   poopTime: 1
+  birthTime: 5
+  mateTime: 5
+  nutrientIncreaseRate: 1
+  poopIncreaseRate: 1
+  mateIncreaseRate: 1
+  staminaIncreaseRate: 1
+  staminaDecreaseRate: 5
+  poopThreshold: 90
+  nutientThreshold: 50
+  mateThreshold: 50
   strength: 50
   attackSpeed: 3
-  attackRange: 4
-  sightRange: 15
-  sightAngle: 120
+  attackRange: 2
   isTerritorial: 0
   isStealthy: 0
+  sightRange: 15
+  sightAngle: 120
   runFromThese:
     serializedVersion: 2
     m_Bits: 0

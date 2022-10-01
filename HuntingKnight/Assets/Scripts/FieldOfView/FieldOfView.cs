@@ -83,7 +83,6 @@ public class FieldOfView : MonoBehaviour
         }
         if (visibleTargets.Count > 0)
         {
-            Debug.Log("Target in sight " + visibleTargets[0].layer);
             isAtDanger = true;
         }
         else

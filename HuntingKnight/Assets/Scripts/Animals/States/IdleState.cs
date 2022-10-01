@@ -18,7 +18,7 @@ public class IdleState : State
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("Entered Idle State");
+        Debug.Log("IdleState");
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.IDLE);
         _idleTime = commonAnimal.animalAttributes.idleTime;
         _timeWhenEnteredState = Time.time;
