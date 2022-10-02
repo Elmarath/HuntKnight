@@ -37,7 +37,6 @@ public class NavigationTestScript : MonoBehaviour
 
         if (isBeingAttacked)
         {
-            Debug.Log("BeingAttacked");
             isBeingAttacked = false;
         }
         //MatchAgentToSurfaceSlope(agent);

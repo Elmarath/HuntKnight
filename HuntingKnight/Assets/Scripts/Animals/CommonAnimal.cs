@@ -58,7 +58,7 @@ public abstract class CommonAnimal : MonoBehaviour
     [HideInInspector] public bool isCustom;
     #endregion
 
-    [HideInInspector] public Vector3 walkToPosition = Vector3.zero;
+
 
     #region animalStats
     [HideInInspector] public float currentHealth;
@@ -71,11 +71,18 @@ public abstract class CommonAnimal : MonoBehaviour
     [HideInInspector] public bool isPoopNeedCritical;
 
     [HideInInspector] public bool isStaminaBeeingUsed;
+    [HideInInspector] public Vector3 walkToPosition = Vector3.zero;
+
+
+    private GameObject _canvas;
+
     #endregion
 
     private void Awake()
     {
         Initialize();
+        _canvas = transform.Find("Canvas").gameObject;
+        _canvas.SetActive(false);
         InvokeRepeating("UpdateStateMachine", 0f, logicUpdateInterval);
         InvokeRepeating("UpdateInterruptStates", 0f, logicUpdateInterval);
     }
@@ -91,7 +98,7 @@ public abstract class CommonAnimal : MonoBehaviour
         fieldOfView.viewRadius = animalAttributes.sightRange;
         fieldOfView.viewAngle = animalAttributes.sightAngle;
         agent.speed = animalAttributes.walkSpeed;
-        agent.angularSpeed = 240f;
+        agent.angularSpeed = animalAttributes.angularSpeed;
 
         currentHealth = animalAttributes.health;
         currentStamina = animalAttributes.stamina;
@@ -157,7 +164,7 @@ public abstract class CommonAnimal : MonoBehaviour
         currentPoopNeed = Mathf.Clamp(currentPoopNeed, 0f, animalAttributes.holdingPoopCapacity);
 
         isHealthDepleted = currentHealth <= 0f;
-        isStaminaDepleted = currentStamina <= 0f;
+        isStaminaDepleted = currentStamina <= (animalAttributes.stamina / 5f);
         isNutrientNeedCritical = currentNutrientNeed >= animalAttributes.nutientThreshold;
         isPoopNeedCritical = currentPoopNeed >= animalAttributes.poopThreshold;
     }
@@ -219,4 +226,11 @@ public abstract class CommonAnimal : MonoBehaviour
         }
     }
 
+    public virtual void ToggleCanvas()
+    {
+        if (_canvas != null)
+        {
+            _canvas.SetActive(!_canvas.activeSelf);
+        }
+    }
 }

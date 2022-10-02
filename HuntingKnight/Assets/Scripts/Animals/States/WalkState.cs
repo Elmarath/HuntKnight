@@ -29,6 +29,12 @@ public class WalkState : State
             isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, AnimalNavigationHelper.GetRandomWalkablePosition
             (commonAnimal.agent, commonAnimal.fieldOfView, Color.magenta));
         }
+
+        if (!isDestinationReachable)
+        {
+            isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, AnimalNavigationHelper.GetRandomWalkablePosition
+            (commonAnimal.agent, commonAnimal.fieldOfView.viewRadius, 360, Color.magenta));
+        }
     }
 
     public override void Exit()
@@ -48,7 +54,6 @@ public class WalkState : State
 
         if (!isDestinationReachable)
         {
-            commonAnimal.walkToPosition = AnimalNavigationHelper.GetRandomWalkablePosition(commonAnimal.agent, commonAnimal.fieldOfView.viewRadius, 360, Color.magenta);
             stateMachine.ChangeState(commonAnimal.idleState);
         }
         else if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position,

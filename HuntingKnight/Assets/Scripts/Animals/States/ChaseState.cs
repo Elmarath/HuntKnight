@@ -9,7 +9,7 @@ public class ChaseState : State
     private bool _isChasing;
     private bool _isDestinationReachable;
     private bool _readyToAttack;
-    private int _recentlyChased = 0;
+    private bool _isStaminaDepleted;
     private Transform _target;
 
     public ChaseState(CommonAnimal commonAnimal, StateMachine stateMachine) : base(commonAnimal, stateMachine)
@@ -20,8 +20,8 @@ public class ChaseState : State
     {
         base.Enter();
 
-        Debug.Log("ChaseState");
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.CHASE);
+        commonAnimal.isStaminaBeeingUsed = true;
         commonAnimal.fieldOfView.viewAngle = 330f; // if it sees it would look at it so larger angle given
         commonAnimal.isChasing = true;
         commonAnimal.agent.speed = commonAnimal.animalAttributes.runSpeed;
@@ -44,6 +44,7 @@ public class ChaseState : State
         _isChasing = false;
         _target = null;
         commonAnimal.isChasing = false;
+        commonAnimal.isStaminaBeeingUsed = false;
         commonAnimal.fieldOfView.viewAngle = commonAnimal.animalAttributes.sightAngle;
         commonAnimal.agent.speed = commonAnimal.animalAttributes.walkSpeed;
         commonAnimal.agent.acceleration = 8;
@@ -59,13 +60,14 @@ public class ChaseState : State
         {
             _isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, _target.position);
 
-            // attack
-            Debug.Log("Distance: " + Vector3.Distance(commonAnimal.transform.position, _target.position));
+            // attack if close enough
             if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.transform.position, _target.position, commonAnimal.animalAttributes.attackRange))
             {
                 _readyToAttack = true;
             }
         }
+
+        _isStaminaDepleted = commonAnimal.currentStamina <= 0;
     }
     public override void LogicUpdate()
     {
@@ -75,7 +77,7 @@ public class ChaseState : State
         {
             stateMachine.ChangeState(commonAnimal.attackState);
         }
-        else if (!_isDestinationReachable || _target == null)
+        else if (!_isDestinationReachable || _isStaminaDepleted || _target == null)
         {
             stateMachine.ChangeState(commonAnimal.idleState);
         }

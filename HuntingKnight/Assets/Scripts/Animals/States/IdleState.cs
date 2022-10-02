@@ -9,7 +9,8 @@ public class IdleState : State
     private float _idleTime;
     private float _timeWhenEnteredState;
     private bool _isWaitTimeOver;
-    private bool _isForwardWalkable;
+
+    private bool _isPoopTime;
 
     public IdleState(CommonAnimal commonAnimal, StateMachine stateMachine) : base(commonAnimal, stateMachine)
     {
@@ -18,7 +19,7 @@ public class IdleState : State
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("IdleState");
+        commonAnimal.agent.velocity = Vector3.zero;
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.IDLE);
         _idleTime = commonAnimal.animalAttributes.idleTime;
         _timeWhenEnteredState = Time.time;
@@ -32,6 +33,11 @@ public class IdleState : State
     {
         base.HandleInput();
         _isWaitTimeOver = (Time.time - _timeWhenEnteredState) >= _idleTime;
+
+        if (_isWaitTimeOver)
+        {
+            _isPoopTime = commonAnimal.isPoopNeedCritical;
+        }
     }
 
     public override void LogicUpdate()
@@ -40,6 +46,11 @@ public class IdleState : State
         if (_isWaitTimeOver)
         {
             stateMachine.ChangeState(commonAnimal.walkState);
+        }
+
+        if (_isWaitTimeOver && _isPoopTime)
+        {
+            stateMachine.ChangeState(commonAnimal.excreteState);
         }
     }
 

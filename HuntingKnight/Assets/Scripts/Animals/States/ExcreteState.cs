@@ -6,6 +6,9 @@ using UnityEngine;
 public class ExcreteState : State
 {
     // Condition variables set here
+    private float _excreteTime;
+    private float _timeWhenEnteredState;
+    private bool _isWaitTimeOver;
 
     public ExcreteState(CommonAnimal commonAnimal, StateMachine stateMachine) : base(commonAnimal, stateMachine)
     {
@@ -15,24 +18,32 @@ public class ExcreteState : State
     {
         base.Enter();
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.EXCRETE);
-        // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
-        // When entered set conditions for exiting the state
+        commonAnimal.agent.velocity = Vector3.zero;
+        _excreteTime = commonAnimal.animalAttributes.poopTime;
     }
 
     public override void Exit()
     {
         base.Exit();
-        // When exiting set the animation variables
+        GameObject.Instantiate(commonAnimal.animalAttributes.animalExcrete, commonAnimal.agent.transform.position, Quaternion.identity);
+        commonAnimal.currentPoopNeed = 0f;
     }
     public override void HandleInput()
     {
         base.HandleInput();
-        // Handle the input and set conditions for exiting the state
+
+        _isWaitTimeOver = (Time.time - _timeWhenEnteredState) >= _excreteTime;
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
+
+        if (_isWaitTimeOver)
+        {
+            stateMachine.ChangeState(commonAnimal.idleState);
+        }
+
         // Check the conditions for exiting the state if true change the state
     }
 

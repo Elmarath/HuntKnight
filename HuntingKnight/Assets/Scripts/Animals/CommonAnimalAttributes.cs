@@ -14,6 +14,7 @@ public class CommonAnimalAttributes : ScriptableObject
     public float walkSpeed = 1f;
     public float runSpeed = 2.5f;
     public float stamina = 50f;
+    public GameObject animalExcrete;
 
     [Header("State Durations")]
     public float idleTime = 1f;
