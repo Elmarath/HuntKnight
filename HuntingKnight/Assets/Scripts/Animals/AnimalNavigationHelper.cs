@@ -5,7 +5,10 @@ using UnityEngine.AI;
 
 public static class AnimalNavigationHelper
 {
-
+    /// <summary>
+    /// matches the animal's navmesh agent to the surface under
+    /// </summary>
+    /// <param name="agent"></param>
     public static void MatchAgentToSurfaceSlope(NavMeshAgent agent)
     {
         // get the normal of the surface the agent is on
@@ -60,6 +63,7 @@ public static class AnimalNavigationHelper
         Vector3 agentPreviousDestination = agent.destination;
         NavMeshPath path = new NavMeshPath();
         agent.CalculatePath(targetPosition, path);
+
         if (path.status == NavMeshPathStatus.PathComplete)
         {
             agent.SetDestination(targetPosition);

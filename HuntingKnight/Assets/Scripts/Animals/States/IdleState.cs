@@ -9,6 +9,7 @@ public class IdleState : State
     private float _idleTime;
     private float _timeWhenEnteredState;
     private bool _isWaitTimeOver;
+    private bool _isGoingForNutrient;
 
     private bool _isPoopTime;
 
@@ -23,11 +24,25 @@ public class IdleState : State
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.IDLE);
         _idleTime = commonAnimal.animalAttributes.idleTime;
         _timeWhenEnteredState = Time.time;
+        commonAnimal.agent.isStopped = true;
+
+        Debug.Log("IdleState");
+
+        _isGoingForNutrient = commonAnimal.isGoingForNutrient;
+        if (_isGoingForNutrient)
+        {
+            if (commonAnimal.visibleEatThese.Count > 0)
+            {
+                Vector3 walkToEatPosition = commonAnimal.visibleEatThese[0].transform.position - (commonAnimal.visibleEatThese[0].transform.position - commonAnimal.transform.position).normalized;
+                commonAnimal.walkToPosition = walkToEatPosition;
+            }
+        }
     }
 
     public override void Exit()
     {
         base.Exit();
+        commonAnimal.agent.isStopped = false;
     }
     public override void HandleInput()
     {

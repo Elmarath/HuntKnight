@@ -974,9 +974,8 @@ GameObject:
   m_Component:
   - component: {fileID: 391536099559164235}
   - component: {fileID: 391536099549357727}
-  - component: {fileID: 391536100962189821}
   - component: {fileID: 391536100962189823}
-  - component: {fileID: 391536100962189822}
+  - component: {fileID: 1411607218}
   m_Layer: 0
   m_Name: Goat
   m_TagString: Untagged
@@ -1010,7 +1009,7 @@ Animator:
   m_GameObject: {fileID: 391536099558741291}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: fe40af1a55a907940b1c0873e4126105, type: 3}
-  m_Controller: {fileID: 9100000, guid: 0ea6bae080d01104c94d889f871faa76, type: 2}
+  m_Controller: {fileID: 9100000, guid: acceae7bda4218847b5f07cc2dc18ca4, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1019,24 +1018,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!143 &391536100962189821
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 391536099558741291}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
 --- !u!195 &391536100962189823
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1059,7 +1040,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &391536100962189822
+--- !u!114 &1411607218
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1068,59 +1049,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 391536099558741291}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36003be02bd7fc54db18675085e2ab6f, type: 3}
+  m_Script: {fileID: 11500000, guid: edeaeef23414a7f48ace7fd6e2f0c26e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleStates:
-  - stateName: Idle
-    animationBool: 
-    minStateTime: 0
-    maxStateTime: 0
-    stateWeight: 0
-  movementStates:
-  - stateName: Walking
-    animationBool: isWalking
-    maxStateTime: 20
-    moveSpeed: 0.8
-    turnSpeed: 120
-  - stateName: Walking
-    animationBool: isRunning
-    maxStateTime: 10
-    moveSpeed: 1.3
-    turnSpeed: 200
-  attackingStates:
-  - stateName: Attacking
-    animationBool: isAttacking
-  deathStates:
-  - stateName: Dead
-    animationBool: isDead
-  species: Goat
-  stats: {fileID: 11400000, guid: e63d78a5b9aceb345ac480e4ada047e5, type: 2}
-  wanderZone: 10
-  awareness: 30
-  scent: 30
-  constainedToWanderZone: 0
-  nonAgressiveTowards: []
-  matchSurfaceRotation: 0
-  surfaceRotationSpeed: 2
-  logChanges: 0
-  showGizmos: 0
-  drawWanderRange: 1
-  drawScentRange: 1
-  drawAwarenessRange: 1
-  deathEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  attackingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  idleEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  movementEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CurrentState: 0
+  logicUpdateInterval: 0.25
+  animalAttributes: {fileID: 11400000, guid: 8c7080eee4359264cbdb5789a62dba39, type: 2}
+  visibleRunFromThese: []
+  visibleAttackThese: []
+  visibleEatThese: []
+  agent: {fileID: 0}
+  animator: {fileID: 0}
+  fieldOfView: {fileID: 0}
+  stateLock: 0
+  isDead: 0
+  isAttacking: 0
+  isChasing: 0
+  isGoingForNutrient: 0
+  isFleeing: 0
+  isTakingDamage: 0
+  isTakingCover: 0
+  isCustom: 0
+  currentHealth: 0
+  currentStamina: 0
+  currentNutrientNeed: 0
+  currentPoopNeed: 0
+  isHealthDepleted: 0
+  isStaminaDepleted: 0
+  isNutrientNeedCritical: 0
+  isPoopNeedCritical: 0
+  isStaminaBeeingUsed: 0
+  walkToPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &391536099558741293
 GameObject:
   m_ObjectHideFlags: 0
@@ -1166,6 +1124,8 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 3
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1177,6 +1137,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

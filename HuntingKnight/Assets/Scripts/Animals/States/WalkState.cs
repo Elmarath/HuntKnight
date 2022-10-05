@@ -5,8 +5,9 @@ using UnityEngine;
 // This is an example of a base state. It is not used in the project.
 public class WalkState : State
 {
-    private bool isDestinationReachable;
-    private bool isDestinationReached;
+    private bool _isDestinationReachable;
+    private bool _isGoingToASpecificPosition;
+    private bool _isGoingForNutrient;
 
     public WalkState(CommonAnimal commonAnimal, StateMachine stateMachine) : base(commonAnimal, stateMachine)
     {
@@ -20,19 +21,20 @@ public class WalkState : State
         // check if animal wants to walk to a specific point
         if (commonAnimal.walkToPosition != Vector3.zero)
         {
-            isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, commonAnimal.walkToPosition);
+            _isGoingToASpecificPosition = true;
+            _isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, commonAnimal.walkToPosition);
             commonAnimal.walkToPosition = Vector3.zero;
         }
         else
         {
             // if not, walk to a random point
-            isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, AnimalNavigationHelper.GetRandomWalkablePosition
+            _isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, AnimalNavigationHelper.GetRandomWalkablePosition
             (commonAnimal.agent, commonAnimal.fieldOfView, Color.magenta));
         }
 
-        if (!isDestinationReachable)
+        if (!_isDestinationReachable)
         {
-            isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, AnimalNavigationHelper.GetRandomWalkablePosition
+            _isDestinationReachable = AnimalNavigationHelper.GoDestination(commonAnimal.agent, AnimalNavigationHelper.GetRandomWalkablePosition
             (commonAnimal.agent, commonAnimal.fieldOfView.viewRadius, 360, Color.magenta));
         }
     }
@@ -40,6 +42,7 @@ public class WalkState : State
     public override void Exit()
     {
         base.Exit();
+        _isGoingToASpecificPosition = false;
         // When exiting set the animation variables
     }
     public override void HandleInput()
@@ -52,10 +55,30 @@ public class WalkState : State
     {
         base.LogicUpdate();
 
-        if (!isDestinationReachable)
+        if (!_isDestinationReachable)
         {
             stateMachine.ChangeState(commonAnimal.idleState);
         }
+        // if going to a specific position, check if reached
+        if (_isGoingToASpecificPosition)
+        {
+            // was it going for nutrient?
+            if (commonAnimal.isGoingForNutrient && AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position,
+ commonAnimal.agent.destination, commonAnimal.agent.stoppingDistance))
+            {
+                commonAnimal.isGoingForNutrient = false;
+                stateMachine.ChangeState(commonAnimal.eatState);
+            }
+            // else reach anyway
+            else if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position,
+commonAnimal.agent.destination, commonAnimal.agent.stoppingDistance))
+            {
+                commonAnimal.isGoingForNutrient = false;
+                stateMachine.ChangeState(commonAnimal.eatState);
+            }
+        }
+
+
         else if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position,
              commonAnimal.agent.destination, commonAnimal.agent.stoppingDistance))
         {

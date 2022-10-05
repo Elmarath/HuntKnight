@@ -21,6 +21,7 @@ public class FleeState : State
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.FLEE);
         commonAnimal.fieldOfView.viewAngle = 330f; // if it sees it would look at it so larger angle given
         commonAnimal.isFleeing = true;
+        commonAnimal.isStaminaBeeingUsed = true;
         commonAnimal.agent.speed = commonAnimal.animalAttributes.runSpeed;
         commonAnimal.agent.acceleration = 16;
         commonAnimal.agent.autoBraking = false;
@@ -44,6 +45,7 @@ public class FleeState : State
         _isGettingChased = false;
         _target = null;
         commonAnimal.isFleeing = false;
+        commonAnimal.isStaminaBeeingUsed = false;
         commonAnimal.fieldOfView.viewAngle = commonAnimal.animalAttributes.sightAngle;
         commonAnimal.agent.speed = commonAnimal.animalAttributes.walkSpeed;
         commonAnimal.agent.acceleration = 8;
@@ -61,7 +63,6 @@ public class FleeState : State
                 if (AnimalNavigationHelper.IsCloseEnough(commonAnimal.transform.position, _target.position, commonAnimal.animalAttributes.sightRange))
                 {
                     _recentlyChased = 3;
-                    Debug.Log("RecentlyChased: " + _recentlyChased);
                 }
                 if (_recentlyChased > 0)
                 {

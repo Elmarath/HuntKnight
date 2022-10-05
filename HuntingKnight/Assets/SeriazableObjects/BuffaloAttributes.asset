@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c2ae53c2916c0546a309fb555e8b41a, type: 3}
+  m_Name: BuffaloAttributes
+  m_EditorClassIdentifier: 
+  nutrientCapacity: 100
+  holdingPoopCapacity: 100
+  health: 100
+  angularSpeed: 180
+  walkSpeed: 1
+  runSpeed: 8
+  stamina: 50
+  animalExcrete: {fileID: 4528337202842737428, guid: c1bc7eea696709947b311aa1b549c339, type: 3}
+  idleTime: 3.5
+  consumeTime: 1
+  poopTime: 1
+  birthTime: 5
+  mateTime: 5
+  nutrientIncreaseRate: 1
+  poopIncreaseRate: 1
+  mateIncreaseRate: 1
+  staminaIncreaseRate: 0.5
+  staminaDecreaseRate: 5
+  poopThreshold: 90
+  nutientThreshold: 50
+  mateThreshold: 50
+  strength: 50
+  attackSpeed: 3
+  attackRange: 2.5
+  isTerritorial: 0
+  isStealthy: 0
+  sightRange: 15
+  sightAngle: 120
+  runFromThese:
+    serializedVersion: 2
+    m_Bits: 0
+  attackThese:
+    serializedVersion: 2
+    m_Bits: 512
+  eatThese:
+    serializedVersion: 2
+    m_Bits: 1024

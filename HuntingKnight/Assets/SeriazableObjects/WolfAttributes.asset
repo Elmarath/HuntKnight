@@ -35,7 +35,7 @@ MonoBehaviour:
   mateThreshold: 50
   strength: 50
   attackSpeed: 3
-  attackRange: 2
+  attackRange: 2.5
   isTerritorial: 0
   isStealthy: 0
   sightRange: 15
@@ -45,7 +45,7 @@ MonoBehaviour:
     m_Bits: 0
   attackThese:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 512
   eatThese:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024

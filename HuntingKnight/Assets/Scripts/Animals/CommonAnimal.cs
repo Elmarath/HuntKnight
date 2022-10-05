@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(Animator), typeof(NavMeshAgent))]
 public abstract class CommonAnimal : MonoBehaviour
 {
 
@@ -17,7 +18,7 @@ public abstract class CommonAnimal : MonoBehaviour
     [Header("FieldOfView")]
     #region FieldOfView
     [HideInInspector] public List<GameObject> visibleRunFromThese = new List<GameObject>();
-    [HideInInspector] public List<GameObject> visibleAttackThese = new List<GameObject>();
+    public List<GameObject> visibleAttackThese = new List<GameObject>();
     [HideInInspector] public List<GameObject> visibleEatThese = new List<GameObject>();
     #endregion
 
@@ -52,13 +53,12 @@ public abstract class CommonAnimal : MonoBehaviour
     [HideInInspector] public bool isDead;
     [HideInInspector] public bool isAttacking;
     [HideInInspector] public bool isChasing;
+    [HideInInspector] public bool isGoingForNutrient;
     [HideInInspector] public bool isFleeing;
     [HideInInspector] public bool isTakingDamage;
     [HideInInspector] public bool isTakingCover;
     [HideInInspector] public bool isCustom;
     #endregion
-
-
 
     #region animalStats
     [HideInInspector] public float currentHealth;
@@ -69,8 +69,8 @@ public abstract class CommonAnimal : MonoBehaviour
     [HideInInspector] public bool isStaminaDepleted;
     [HideInInspector] public bool isNutrientNeedCritical;
     [HideInInspector] public bool isPoopNeedCritical;
-
     [HideInInspector] public bool isStaminaBeeingUsed;
+
     [HideInInspector] public Vector3 walkToPosition = Vector3.zero;
 
 
@@ -120,6 +120,10 @@ public abstract class CommonAnimal : MonoBehaviour
         else if (visibleAttackThese.Count > 0 && !isStaminaDepleted)
         {
             isChasing = true;
+        }
+        else if (visibleEatThese.Count > 0)
+        {
+            isGoingForNutrient = true;
         }
     }
 
@@ -226,11 +230,33 @@ public abstract class CommonAnimal : MonoBehaviour
         }
     }
 
+    public virtual void TakeDamage(float damage)
+    {
+        agent.velocity *= 0.1f;
+        currentHealth -= damage;
+        if (currentHealth <= 0f)
+        {
+            isDead = true;
+        }
+    }
+
     public virtual void ToggleCanvas()
     {
         if (_canvas != null)
         {
             _canvas.SetActive(!_canvas.activeSelf);
         }
+    }
+
+    public virtual bool GetEaten()
+    {
+        if (gameObject.layer != LayerMask.NameToLayer("DeadAnimal"))
+        {
+            return false;
+        }
+
+        StopAllCoroutines();
+        Destroy(gameObject, 3f);
+        return true;
     }
 }

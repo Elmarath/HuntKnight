@@ -25,7 +25,7 @@ public class ExcreteState : State
     public override void Exit()
     {
         base.Exit();
-        GameObject.Instantiate(commonAnimal.animalAttributes.animalExcrete, commonAnimal.agent.transform.position, Quaternion.identity);
+        GameObject.Instantiate(commonAnimal.animalAttributes.animalExcrete, commonAnimal.agent.transform.position - commonAnimal.agent.transform.forward / 2, Quaternion.identity);
         commonAnimal.currentPoopNeed = 0f;
     }
     public override void HandleInput()

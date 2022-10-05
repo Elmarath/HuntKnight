@@ -5,28 +5,15 @@ using UnityEngine;
 public class EatableVegatation : MonoBehaviour
 {
     public bool _isStartedToBeEaten = false;
-    public bool _isEaten = false;
-    public GameObject _eater;
-    public Vector3 _mainPoisiton;
+    public CommonAnimal _eater;
     public Vector3 _mainScale;
+    public int _mainLayer;
     public float _growBackTime = 20f;
 
-    public bool button = false;
-
-    private void Update()
+    public void StartEating(CommonAnimal eater)
     {
-        if (button)
-        {
-            button = false;
-            StartEating(_eater);
-        }
-    }
-
-    public void StartEating(GameObject eater)
-    {
-        _isStartedToBeEaten = true;
-        _mainPoisiton = transform.position;
         _mainScale = transform.localScale;
+        _mainLayer = gameObject.layer;
         _eater = eater;
 
         StartCoroutine("Eating");
@@ -34,15 +21,17 @@ public class EatableVegatation : MonoBehaviour
 
     private IEnumerator Eating()
     {
-        float animalConsumeTime = _eater.GetComponent<CommonAnimal>().animalAttributes.consumeTime;
+        Debug.Log("Eating in veg");
+        float animalConsumeTime = _eater.animalAttributes.consumeTime;
         float waitForSec = 0.1f;
-        int ticCount = Mathf.FloorToInt(animalConsumeTime / waitForSec);
+        float ticCount = 1 / waitForSec;
+        float scaleChange = _mainScale.x / ticCount;
         for (int i = 0; i < ticCount; i++)
         {
-            transform.localScale -= new Vector3(waitForSec, waitForSec, waitForSec);
+            transform.localScale -= new Vector3(scaleChange, scaleChange, scaleChange);
             yield return new WaitForSeconds(waitForSec);
         }
-        _isEaten = true;
+        gameObject.layer = 0;
         yield return new WaitForSeconds(_growBackTime);
         StartCoroutine("GrowBack");
     }
@@ -50,12 +39,14 @@ public class EatableVegatation : MonoBehaviour
     private IEnumerator GrowBack()
     {
         float waitForSec = 0.1f;
-        int ticCount = Mathf.FloorToInt(1 / waitForSec);
+        float ticCount = 1 / waitForSec;
+        float scaleChange = _mainScale.x / ticCount;
         for (int i = 0; i < ticCount; i++)
         {
-            transform.localScale += new Vector3(waitForSec, waitForSec, waitForSec);
+            transform.localScale += new Vector3(scaleChange, scaleChange, scaleChange);
             yield return new WaitForSeconds(waitForSec);
         }
+        gameObject.layer = _mainLayer;
     }
 
 }

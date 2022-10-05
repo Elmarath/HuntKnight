@@ -1749,9 +1749,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6073855695994823536}
   - component: {fileID: 6073855695987920172}
-  - component: {fileID: 6073855696458067596}
   - component: {fileID: 6073855696458067594}
-  - component: {fileID: 6073855696458067595}
+  - component: {fileID: 1131987895}
   m_Layer: 0
   m_Name: Squirrel
   m_TagString: Untagged
@@ -1785,7 +1784,7 @@ Animator:
   m_GameObject: {fileID: 6073855695995191056}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0774b145ee12ef44791f266f2f099578, type: 3}
-  m_Controller: {fileID: 9100000, guid: d9a907752332e324798d8afb5b41cf71, type: 2}
+  m_Controller: {fileID: 9100000, guid: 56fcfaf7911a81d4db7b67e1c998697b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1794,24 +1793,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!143 &6073855696458067596
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6073855695995191056}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
 --- !u!195 &6073855696458067594
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1834,7 +1815,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6073855696458067595
+--- !u!114 &1131987895
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1843,59 +1824,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 6073855695995191056}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36003be02bd7fc54db18675085e2ab6f, type: 3}
+  m_Script: {fileID: 11500000, guid: 167a68643a0e97b41a908a6aa6c4c890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleStates:
-  - stateName: Idle
-    animationBool: 
-    minStateTime: 0
-    maxStateTime: 0
-    stateWeight: 0
-  movementStates:
-  - stateName: Walking
-    animationBool: isWalking
-    maxStateTime: 20
-    moveSpeed: 0.8
-    turnSpeed: 120
-  - stateName: Walking
-    animationBool: isRunning
-    maxStateTime: 10
-    moveSpeed: 1.3
-    turnSpeed: 200
-  attackingStates:
-  - stateName: Attacking
-    animationBool: isAttacking
-  deathStates:
-  - stateName: Dead
-    animationBool: isDead
-  species: Squirrel
-  stats: {fileID: 11400000, guid: 7aee07b0e89d4ea4eaf29fb1db6344e2, type: 2}
-  wanderZone: 10
-  awareness: 30
-  scent: 30
-  constainedToWanderZone: 0
-  nonAgressiveTowards: []
-  matchSurfaceRotation: 0
-  surfaceRotationSpeed: 2
-  logChanges: 0
-  showGizmos: 0
-  drawWanderRange: 1
-  drawScentRange: 1
-  drawAwarenessRange: 1
-  deathEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  attackingEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  idleEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  movementEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CurrentState: 0
+  logicUpdateInterval: 0.25
+  animalAttributes: {fileID: 11400000, guid: f465851403246b84c89465e9adb89024, type: 2}
+  visibleRunFromThese: []
+  visibleAttackThese: []
+  visibleEatThese: []
+  agent: {fileID: 0}
+  animator: {fileID: 0}
+  fieldOfView: {fileID: 0}
+  stateLock: 0
+  isDead: 0
+  isAttacking: 0
+  isChasing: 0
+  isGoingForNutrient: 0
+  isFleeing: 0
+  isTakingDamage: 0
+  isTakingCover: 0
+  isCustom: 0
+  currentHealth: 0
+  currentStamina: 0
+  currentNutrientNeed: 0
+  currentPoopNeed: 0
+  isHealthDepleted: 0
+  isStaminaDepleted: 0
+  isNutrientNeedCritical: 0
+  isPoopNeedCritical: 0
+  isStaminaBeeingUsed: 0
+  walkToPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &6073855695995191058
 GameObject:
   m_ObjectHideFlags: 0
@@ -2003,6 +1961,8 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 3
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2014,6 +1974,7 @@ SkinnedMeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

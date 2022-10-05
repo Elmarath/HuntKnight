@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 // This is an example of a base state. It is not used in the project.
 public class DeathState : State
@@ -14,7 +15,19 @@ public class DeathState : State
     public override void Enter()
     {
         base.Enter();
+        commonAnimal.stateLock = true;
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.DEATH);
+        commonAnimal.agent.velocity *= 0f;
+        commonAnimal.isDead = true;
+        commonAnimal.gameObject.layer = LayerMask.NameToLayer("DeadAnimal");
+        foreach (Transform child in commonAnimal.transform)
+        {
+            child.gameObject.layer = LayerMask.NameToLayer("DeadAnimal"); ;
+        }
+        commonAnimal.fieldOfView.isFieldOfViewVisible = false;
+        commonAnimal.GetComponent<NavMeshAgent>().enabled = false;
+        commonAnimal.GetComponentInChildren<FieldOfView>().enabled = false;
+        //commonAnimal.GetComponentInChildren<AnimalCanvasController>().enabled = false;
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
     }

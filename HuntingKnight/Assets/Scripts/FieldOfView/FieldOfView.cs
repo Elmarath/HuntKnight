@@ -6,6 +6,7 @@ public class FieldOfView : MonoBehaviour
 {
     [HideInInspector]
     public float viewRadius = 10f;
+    public float hearRadius = 3f;
     public float viewAngle = 120f;
     public LayerMask targetMask;
     public LayerMask obstacleMask;
@@ -43,6 +44,7 @@ public class FieldOfView : MonoBehaviour
         if (isFieldOfViewVisible)
         {
             DrawFieldOfView();
+            DrawRaysToTargets();
         }
         else
         {
@@ -81,6 +83,22 @@ public class FieldOfView : MonoBehaviour
                 visibleTargets.Remove(targetObject);
             }
         }
+        // this is for hearing (no check will be applied here)
+        Collider[] targetsInHearRadius = Physics.OverlapSphere(transform.position, hearRadius, targetMask);
+        for (int i = 0; i < targetsInHearRadius.Length; i++)
+        {
+            GameObject targetObject = targetsInViewRadius[i].gameObject;
+
+            if (targetObject == gameObject)
+            {
+                visibleTargets.Remove(targetObject);
+            }
+            visibleTargets.Add(targetObject);
+        }
+
+
+
+
         if (visibleTargets.Count > 0)
         {
             isAtDanger = true;
@@ -92,6 +110,14 @@ public class FieldOfView : MonoBehaviour
         return visibleTargets;
     }
 
+    void DrawRaysToTargets()
+    {
+        for (int i = 0; i < visibleTargets.Count; i++)
+        {
+            if (transform != null && visibleTargets[i] != null)
+                Debug.DrawLine(transform.position, visibleTargets[i].transform.position, Color.red);
+        }
+    }
 
 
     void DrawFieldOfView()

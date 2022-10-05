@@ -19,7 +19,6 @@ public class AttackState : State
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("AttackState");
         /////
         commonAnimal.stateLock = true;
         /////
@@ -27,20 +26,20 @@ public class AttackState : State
         _timeWhenEnteredState = Time.time;
         _isWaitTimeOver = false;
 
+        commonAnimal.agent.velocity *= 0.01f;
+
         Collider[] targetsInAttackRadius = Physics.OverlapSphere(commonAnimal.agent.transform.position, commonAnimal.animalAttributes.attackRange, commonAnimal.animalAttributes.attackThese);
         Collider targetCollider = AnimalNavigationHelper.GetClosestCollider(commonAnimal.agent, targetsInAttackRadius);
         if (targetCollider != null)
         {
-            _target = targetCollider.transform;
-
+            _target = targetCollider.transform.parent;
             // communication with target
-            if (_target.GetComponent<NavigationTestScript>() != null)
+            if (_target.GetComponent<CommonAnimal>() != null)
             {
-                _target.GetComponent<NavigationTestScript>().isBeingAttacked = true;
-                //_target.GetComponent<CommonAnimal>().isTakingDamage = true;
+                _target.GetComponent<CommonAnimal>().TakeDamage(commonAnimal.animalAttributes.strength);
+                commonAnimal.agent.destination = _target.position;
             }
 
-            commonAnimal.agent.isStopped = true;
         }
     }
 
@@ -50,7 +49,6 @@ public class AttackState : State
         /////
         commonAnimal.stateLock = false;
         /////
-        commonAnimal.agent.isStopped = true;
         commonAnimal.agent.isStopped = false;
         commonAnimal.isAttacking = false;
         _isTargetStillInRadius = false;
@@ -59,17 +57,25 @@ public class AttackState : State
     public override void HandleInput()
     {
         base.HandleInput();
+
         _isWaitTimeOver = (Time.time - _timeWhenEnteredState) >= commonAnimal.animalAttributes.attackSpeed;
-        _isTargetStillInRadius = AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position, _target.position, commonAnimal.animalAttributes.sightRange);
+        if (_target != null)
+        {
+            _isTargetStillInRadius = AnimalNavigationHelper.IsCloseEnough(commonAnimal.agent.transform.position, _target.position, commonAnimal.animalAttributes.sightRange);
+        }
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
 
-        if (_isWaitTimeOver && _isTargetStillInRadius)
+        if (_isWaitTimeOver && _isTargetStillInRadius && !_target.GetComponent<CommonAnimal>().isDead)
         {
             stateMachine.ChangeState(commonAnimal.chaseState);
+        }
+        if (_isWaitTimeOver && _isTargetStillInRadius && _target.GetComponent<CommonAnimal>().isDead)
+        {
+            stateMachine.ChangeState(commonAnimal.idleState);
         }
         else if (_isWaitTimeOver && !_isTargetStillInRadius)
         {

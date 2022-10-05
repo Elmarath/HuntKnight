@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 8768654135292882270}
   - component: {fileID: 8722368695272492104}
   - component: {fileID: 8801123101967263456}
-  - component: {fileID: 8687934696158426717}
+  - component: {fileID: -3869375188319905228}
   m_Layer: 7
   m_Name: Wolf Grey
   m_TagString: Untagged
@@ -314,7 +314,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8687934696158426717
+--- !u!114 &-3869375188319905228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -323,10 +323,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8687934696158426716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f38730e1bc31ee45afb51c7a662ece2, type: 3}
+  m_Script: {fileID: 11500000, guid: cda7cd59f17b12c4fa29b3e96f5b7523, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logicUpdateInterval: 0.378
+  logicUpdateInterval: 0.25
   animalAttributes: {fileID: 11400000, guid: 382c3265806b7f34cb44208b6fdee886, type: 2}
   visibleRunFromThese: []
   visibleAttackThese: []
@@ -338,6 +338,7 @@ MonoBehaviour:
   isDead: 0
   isAttacking: 0
   isChasing: 0
+  isGoingForNutrient: 0
   isFleeing: 0
   isTakingDamage: 0
   isTakingCover: 0

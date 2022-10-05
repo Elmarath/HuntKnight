@@ -15,6 +15,9 @@ public class TakeDamageState : State
     {
         base.Enter();
         commonAnimal.animations.PlayAnimation(commonAnimal.animations.TAKE_DAMAGE);
+        commonAnimal.agent.velocity = Vector3.zero;
+
+
         // When entered set the animation variables (generally use GetComponent<AnimalKind>().variableName)
         // When entered set conditions for exiting the state
     }

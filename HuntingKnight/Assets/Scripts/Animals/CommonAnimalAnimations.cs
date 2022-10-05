@@ -36,10 +36,10 @@ public class CommonAnimalAnimations
     public StateAnimation EXCRETE = new StateAnimation("Excrete", Animator.StringToHash("Excrete"), 0.1f, 0f, false); // 7
     public StateAnimation MAKE_BIRTH = new StateAnimation("MakeBirth", Animator.StringToHash("MakeBirth"), 0.1f, 0f, false); // 8
     public StateAnimation MATE = new StateAnimation("Mate", Animator.StringToHash("Mate"), 1f, 0f, false); // 9
-    public StateAnimation TAKE_DAMAGE = new StateAnimation("TAKEDAMAGE", Animator.StringToHash("TAKEDAMAGE"), 0.1f, 0f, false); // 10
-    public StateAnimation TAKE_COVER = new StateAnimation("TAKECOVER", Animator.StringToHash("TAKECOVER"), 0.1f, 0f, false); // 11 
+    public StateAnimation TAKE_DAMAGE = new StateAnimation("TAKEDAMAGE", Animator.StringToHash("TakeDamage"), 0.1f, 0f, false); // 10
+    public StateAnimation TAKE_COVER = new StateAnimation("TAKECOVER", Animator.StringToHash("TakeCover"), 0.1f, 0f, false); // 11 
     public StateAnimation FLEE = new StateAnimation("Flee", Animator.StringToHash("Flee"), 0.1f, 0f, false); // 12
-    public StateAnimation CUSTOM = new StateAnimation("CUSTOM", Animator.StringToHash("CUSTOM"), 0.1f, 0f, false); // 13
+    public StateAnimation CUSTOM = new StateAnimation("CUSTOM", Animator.StringToHash("Custom"), 0.1f, 0f, false); // 13
 
     public void PlayAnimation(StateAnimation stateAnimation)
     {
